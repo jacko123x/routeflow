@@ -152,6 +152,12 @@ const defaultRegistryRecords = [
     ["vehicle", "232-KY-904", "Kingdom Bus", "Due Soon"]
 ];
 
+const defaultParentAccount = {
+    balanceDue: 48,
+    lastPayment: 96,
+    paymentStatus: "Payment due"
+};
+
 const defaultStopAssignments = {
     "KY-014": [
         { pupil: "Emma Murphy", stop: "Oakpark Road", guardian: "Laura Murphy", state: "pending" },
@@ -180,6 +186,7 @@ function loadState() {
         operatorDocuments: cloneDefault(defaultOperatorDocuments),
         tickets: cloneDefault(defaultTickets),
         registryRecords: cloneDefault(defaultRegistryRecords),
+        parentAccount: cloneDefault(defaultParentAccount),
         stopAssignments: cloneDefault(defaultStopAssignments),
         selectedRouteIndex: 0,
         stepIndex: -1,
@@ -203,6 +210,9 @@ function loadState() {
             registryRecords: Array.isArray(savedState.registryRecords)
                 ? savedState.registryRecords
                 : defaults.registryRecords,
+            parentAccount: savedState.parentAccount && typeof savedState.parentAccount === "object"
+                ? savedState.parentAccount
+                : defaults.parentAccount,
             stopAssignments: savedState.stopAssignments && typeof savedState.stopAssignments === "object"
                 ? savedState.stopAssignments
                 : defaults.stopAssignments,
@@ -218,6 +228,7 @@ const routes = state.routes;
 const operatorDocuments = state.operatorDocuments;
 const tickets = state.tickets;
 const registryRecords = state.registryRecords;
+const parentAccount = state.parentAccount;
 const stopAssignments = state.stopAssignments;
 let selectedRouteIndex = Math.max(0, Math.min(state.selectedRouteIndex, routes.length - 1));
 let stepIndex = state.stepIndex;
@@ -268,6 +279,10 @@ const elements = {
     parentDriver: document.querySelector("#parentDriver"),
     parentVehicle: document.querySelector("#parentVehicle"),
     parentPickup: document.querySelector("#parentPickup"),
+    balanceDue: document.querySelector("#balanceDue"),
+    lastPayment: document.querySelector("#lastPayment"),
+    paymentStatus: document.querySelector("#paymentStatus"),
+    payNowButton: document.querySelector("#payNowButton"),
     parentStatus: document.querySelector("#parentStatus"),
     parentEtaLabel: document.querySelector("#parentEtaLabel"),
     parentEta: document.querySelector("#parentEta")
@@ -293,6 +308,7 @@ function saveState() {
         operatorDocuments,
         tickets,
         registryRecords,
+        parentAccount,
         stopAssignments,
         selectedRouteIndex,
         stepIndex,
@@ -305,6 +321,7 @@ function restoreDefaults() {
     operatorDocuments.splice(0, operatorDocuments.length, ...cloneDefault(defaultOperatorDocuments));
     tickets.splice(0, tickets.length, ...cloneDefault(defaultTickets));
     registryRecords.splice(0, registryRecords.length, ...cloneDefault(defaultRegistryRecords));
+    Object.assign(parentAccount, cloneDefault(defaultParentAccount));
     Object.keys(stopAssignments).forEach((key) => delete stopAssignments[key]);
     Object.assign(stopAssignments, cloneDefault(defaultStopAssignments));
     selectedRouteIndex = 0;
@@ -525,6 +542,14 @@ function renderStopAssignments() {
     }).join("");
 }
 
+function renderParentAccount() {
+    elements.balanceDue.textContent = `EUR ${parentAccount.balanceDue.toFixed(2)}`;
+    elements.lastPayment.textContent = `EUR ${parentAccount.lastPayment.toFixed(2)}`;
+    elements.paymentStatus.textContent = parentAccount.paymentStatus;
+    elements.payNowButton.disabled = parentAccount.balanceDue === 0;
+    elements.payNowButton.textContent = parentAccount.balanceDue === 0 ? "Paid" : "Pay Now";
+}
+
 function logEvent(step) {
     const route = getSelectedRoute();
 
@@ -588,6 +613,7 @@ function applyStep() {
     renderTickets();
     renderRegistryRecords();
     renderStopAssignments();
+    renderParentAccount();
     renderEvents();
 }
 
@@ -776,6 +802,27 @@ function addRegistryRecord(event) {
     applyStep();
 }
 
+function settleParentBalance() {
+    if (parentAccount.balanceDue === 0) {
+        return;
+    }
+
+    const paidAmount = parentAccount.balanceDue;
+
+    parentAccount.lastPayment = paidAmount;
+    parentAccount.balanceDue = 0;
+    parentAccount.paymentStatus = "Paid up to date";
+
+    eventHistory.unshift({
+        type: "payment.completed",
+        message: `Parent paid EUR ${paidAmount.toFixed(2)}`,
+        time: formatTime()
+    });
+
+    saveState();
+    applyStep();
+}
+
 document.querySelectorAll(".nav-tab").forEach((tab) => {
     tab.addEventListener("click", () => {
         const view = tab.dataset.view;
@@ -821,6 +868,7 @@ elements.addRouteButton.addEventListener("click", () => {
     document.querySelector("#routeCodeInput").focus();
 });
 elements.advanceDemo.addEventListener("click", advanceJourney);
+elements.payNowButton.addEventListener("click", settleParentBalance);
 elements.driverAction.addEventListener("click", advanceJourney);
 elements.resetDemo.addEventListener("click", resetJourney);
 elements.routeForm.addEventListener("submit", addRoute);

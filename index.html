@@ -512,13 +512,18 @@
                     <div class="parent-action-grid">
                         <article class="parent-action-card">
                             <span>Balance Due</span>
-                            <strong>EUR 48.00</strong>
-                            <button class="primary-action" type="button">Pay Now</button>
+                            <strong id="balanceDue">EUR 48.00</strong>
+                            <button id="payNowButton" class="primary-action" type="button">Pay Now</button>
                         </article>
                         <article class="parent-action-card">
                             <span>Last Payment</span>
-                            <strong>EUR 96.00</strong>
+                            <strong id="lastPayment">EUR 96.00</strong>
                             <button class="secondary-action" type="button">View Receipt</button>
+                        </article>
+                        <article class="parent-action-card">
+                            <span>Account Status</span>
+                            <strong id="paymentStatus">Payment due</strong>
+                            <button class="secondary-action" type="button">View Statement</button>
                         </article>
                     </div>
                 </section>

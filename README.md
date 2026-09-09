@@ -44,6 +44,7 @@ Open `index.html` through a local web server to try the prototype.
 - See pickup details from the assigned route.
 - Pay fees, view tickets, manage notifications, and report absences.
 - Current sections: Journey, Details, Payments, Tickets, Notifications.
+- Settle the demo balance and log a payment completion event.
 
 ## Current Prototype
 
