@@ -58,6 +58,7 @@
                 </div>
                 <div class="topbar-actions">
                     <button id="resetDemo" class="secondary-action" type="button">Reset</button>
+                    <button id="addRouteButton" class="secondary-action" type="button">Add Route</button>
                     <button id="advanceDemo" class="primary-action" type="button">Advance Journey</button>
                 </div>
             </header>
@@ -93,7 +94,7 @@
 
                     <section class="journey-detail">
                         <div class="section-heading">
-                            <h3>KY-014</h3>
+                            <h3 id="activeRouteCode">KY-014</h3>
                             <span id="routeStateLabel">Preparing</span>
                         </div>
                         <div class="map-panel">
@@ -104,13 +105,49 @@
                             <div id="busMarker" class="bus-marker">BUS</div>
                         </div>
                         <div class="detail-grid">
-                            <div><span>Operator</span><strong>Kerry Coaches</strong></div>
-                            <div><span>Driver</span><strong>Michael O'Shea</strong></div>
-                            <div><span>Vehicle</span><strong>241-KY-123</strong></div>
+                            <div><span>Operator</span><strong id="activeOperator">Kerry Coaches</strong></div>
+                            <div><span>Driver</span><strong id="activeDriver">Michael O'Shea</strong></div>
+                            <div><span>Vehicle</span><strong id="activeVehicle">241-KY-123</strong></div>
                             <div><span>Pupils</span><strong id="pickedUpCount">0 / 23 picked up</strong></div>
                         </div>
                     </section>
                 </div>
+
+                <section class="planning-board">
+                    <div class="section-heading">
+                        <h3>Schedule Builder</h3>
+                        <span>Morning services</span>
+                    </div>
+                    <form id="routeForm" class="route-form">
+                        <label>
+                            Route
+                            <input id="routeCodeInput" name="routeCode" required placeholder="KY-066">
+                        </label>
+                        <label>
+                            School
+                            <input id="schoolInput" name="school" required placeholder="St Ita's Primary">
+                        </label>
+                        <label>
+                            Driver
+                            <input id="driverInput" name="driver" required placeholder="Aisling Byrne">
+                        </label>
+                        <label>
+                            Start
+                            <input id="startInput" name="startTime" required type="time" value="07:55">
+                        </label>
+                        <button class="primary-action" type="submit">Save Route</button>
+                    </form>
+                    <div class="schedule-table" role="table" aria-label="Route schedule">
+                        <div class="schedule-row schedule-head" role="row">
+                            <span>Route</span>
+                            <span>School</span>
+                            <span>Driver</span>
+                            <span>Start</span>
+                            <span>Status</span>
+                        </div>
+                        <div id="scheduleRows"></div>
+                    </div>
+                </section>
             </section>
 
             <section id="driver" class="view">
@@ -156,8 +193,8 @@
                         </div>
                         <dl>
                             <div><dt>Pickup</dt><dd>Oakpark Road</dd></div>
-                            <div><dt>Driver</dt><dd>Michael</dd></div>
-                            <div><dt>Vehicle</dt><dd>241-KY-123</dd></div>
+                            <div><dt>Driver</dt><dd id="parentDriver">Michael</dd></div>
+                            <div><dt>Vehicle</dt><dd id="parentVehicle">241-KY-123</dd></div>
                         </dl>
                     </div>
                 </div>

@@ -208,9 +208,17 @@ main {
     background: var(--green);
 }
 
+.primary-action:hover {
+    background: var(--green-dark);
+}
+
 .secondary-action {
     color: var(--ink);
     background: #e7dec2;
+}
+
+.secondary-action:hover {
+    background: #dccfaa;
 }
 
 .wide {
@@ -273,11 +281,16 @@ main {
 .journey-detail,
 .next-stop,
 .manifest,
+.planning-board,
 #events {
     background: var(--panel);
     border: 1px solid var(--line);
     border-radius: 8px;
     padding: 18px;
+}
+
+.planning-board {
+    margin-top: 18px;
 }
 
 .section-heading {
@@ -316,6 +329,20 @@ main {
     background: #fffaf0;
 }
 
+.route-row {
+    width: 100%;
+    text-align: left;
+}
+
+.route-row.active {
+    border-color: var(--green);
+    box-shadow: inset 4px 0 0 var(--green);
+}
+
+.route-row:hover {
+    background: #fff5d6;
+}
+
 .route-row strong,
 .manifest-row strong {
     display: block;
@@ -333,6 +360,79 @@ main {
 .route-status.watch { background: var(--amber); }
 .route-status.late { background: var(--red); }
 .route-status.idle { background: var(--muted); }
+
+.route-form {
+    display: grid;
+    grid-template-columns: 0.65fr 1.2fr 1fr 0.55fr auto;
+    gap: 12px;
+    align-items: end;
+    margin-bottom: 18px;
+}
+
+.route-form label {
+    display: grid;
+    gap: 6px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.route-form input {
+    min-width: 0;
+    height: 42px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0 12px;
+    color: var(--ink);
+    background: #fffaf0;
+    font: inherit;
+}
+
+.route-form input:focus {
+    border-color: var(--green);
+    outline: 3px solid rgba(0, 122, 61, 0.16);
+}
+
+.schedule-table {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+}
+
+.schedule-row {
+    width: 100%;
+    min-width: 780px;
+    display: grid;
+    grid-template-columns: 0.7fr 1.4fr 1fr 0.6fr 0.8fr;
+    gap: 14px;
+    align-items: center;
+    padding: 12px 14px;
+    color: var(--ink);
+    background: #fffaf0;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+}
+
+.schedule-row:last-child {
+    border-bottom: 0;
+}
+
+.schedule-row:hover {
+    background: #fff5d6;
+}
+
+.schedule-head {
+    color: #ffffff;
+    background: var(--green-dark);
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.schedule-head:hover {
+    background: var(--green-dark);
+}
 
 .map-panel {
     position: relative;
@@ -563,6 +663,14 @@ dd {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
+    .route-form {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .route-form button {
+        grid-column: 1 / -1;
+    }
+
     .topbar {
         align-items: flex-start;
         flex-direction: column;
@@ -576,12 +684,18 @@ dd {
     }
 
     .summary-grid,
-    .detail-grid {
+    .detail-grid,
+    .route-form {
         grid-template-columns: 1fr;
+    }
+
+    .route-form button {
+        width: 100%;
     }
 
     .topbar-actions {
         width: 100%;
+        flex-wrap: wrap;
     }
 
     .topbar-actions button {
