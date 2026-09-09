@@ -179,6 +179,32 @@
                     </div>
                 </section>
 
+                <section class="registry-board">
+                    <div class="section-heading">
+                        <h3>Driver & Fleet Register</h3>
+                        <span>Operational records</span>
+                    </div>
+                    <form id="registryForm" class="registry-form">
+                        <label>
+                            Type
+                            <select id="registryType" name="registryType">
+                                <option value="driver">Driver</option>
+                                <option value="vehicle">Vehicle</option>
+                            </select>
+                        </label>
+                        <label>
+                            Name / Registration
+                            <input id="registryName" name="registryName" required placeholder="Driver name or bus reg">
+                        </label>
+                        <label>
+                            Operator
+                            <input id="registryOperator" name="registryOperator" required placeholder="Kerry Coaches">
+                        </label>
+                        <button class="primary-action" type="submit">Add Record</button>
+                    </form>
+                    <div id="registryList" class="review-list"></div>
+                </section>
+
                 <section class="document-queue">
                     <div class="section-heading">
                         <h3>Compliance Queue</h3>

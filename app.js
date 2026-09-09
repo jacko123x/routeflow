@@ -153,6 +153,13 @@ const defaultTickets = [
     ["Route query", "Can Emma use the Moyderwell stop on Friday?", "Open"]
 ];
 
+const defaultRegistryRecords = [
+    ["driver", "Michael O'Shea", "Kerry Coaches", "Approved"],
+    ["driver", "Aoife Griffin", "Dingle Direct", "Review"],
+    ["vehicle", "241-KY-123", "Kerry Coaches", "Approved"],
+    ["vehicle", "232-KY-904", "Kingdom Bus", "Due Soon"]
+];
+
 function cloneDefault(value) {
     return JSON.parse(JSON.stringify(value));
 }
@@ -162,6 +169,7 @@ function loadState() {
         routes: cloneDefault(defaultRoutes),
         operatorDocuments: cloneDefault(defaultOperatorDocuments),
         tickets: cloneDefault(defaultTickets),
+        registryRecords: cloneDefault(defaultRegistryRecords),
         selectedRouteIndex: 0,
         stepIndex: -1,
         eventHistory: []
@@ -181,6 +189,9 @@ function loadState() {
                 ? savedState.operatorDocuments
                 : defaults.operatorDocuments,
             tickets: Array.isArray(savedState.tickets) ? savedState.tickets : defaults.tickets,
+            registryRecords: Array.isArray(savedState.registryRecords)
+                ? savedState.registryRecords
+                : defaults.registryRecords,
             eventHistory: Array.isArray(savedState.eventHistory) ? savedState.eventHistory : defaults.eventHistory
         };
     } catch {
@@ -192,6 +203,7 @@ const state = loadState();
 const routes = state.routes;
 const operatorDocuments = state.operatorDocuments;
 const tickets = state.tickets;
+const registryRecords = state.registryRecords;
 let selectedRouteIndex = Math.max(0, Math.min(state.selectedRouteIndex, routes.length - 1));
 let stepIndex = state.stepIndex;
 const eventHistory = state.eventHistory;
@@ -211,9 +223,11 @@ const elements = {
     scheduleRows: document.querySelector("#scheduleRows"),
     operatorDocumentList: document.querySelector("#operatorDocumentList"),
     ticketList: document.querySelector("#ticketList"),
+    registryList: document.querySelector("#registryList"),
     routeForm: document.querySelector("#routeForm"),
     documentForm: document.querySelector("#documentForm"),
     ticketForm: document.querySelector("#ticketForm"),
+    registryForm: document.querySelector("#registryForm"),
     addRouteButton: document.querySelector("#addRouteButton"),
     advanceDemo: document.querySelector("#advanceDemo"),
     resetDemo: document.querySelector("#resetDemo"),
@@ -244,6 +258,7 @@ function saveState() {
         routes,
         operatorDocuments,
         tickets,
+        registryRecords,
         selectedRouteIndex,
         stepIndex,
         eventHistory: eventHistory.slice(0, 50)
@@ -254,6 +269,7 @@ function restoreDefaults() {
     routes.splice(0, routes.length, ...cloneDefault(defaultRoutes));
     operatorDocuments.splice(0, operatorDocuments.length, ...cloneDefault(defaultOperatorDocuments));
     tickets.splice(0, tickets.length, ...cloneDefault(defaultTickets));
+    registryRecords.splice(0, registryRecords.length, ...cloneDefault(defaultRegistryRecords));
     selectedRouteIndex = 0;
     stepIndex = -1;
     eventHistory.length = 0;
@@ -389,6 +405,23 @@ function renderTickets() {
     `).join("");
 }
 
+function renderRegistryRecords() {
+    elements.registryList.innerHTML = registryRecords.map(([type, name, operator, status]) => {
+        const tone = status === "Approved" ? "" : status === "Due Soon" ? "watch" : "idle";
+        const label = type === "driver" ? "Driver" : "Vehicle";
+
+        return `
+            <article class="review-item">
+                <div>
+                    <strong>${name}</strong>
+                    <span>${label} - ${operator}</span>
+                </div>
+                <span class="route-status ${tone}">${status}</span>
+            </article>
+        `;
+    }).join("");
+}
+
 function logEvent(step) {
     const route = getSelectedRoute();
 
@@ -445,6 +478,7 @@ function applyStep() {
     renderSchedule();
     renderOperatorDocuments();
     renderTickets();
+    renderRegistryRecords();
     renderEvents();
 }
 
@@ -539,6 +573,27 @@ function addTicket(event) {
     applyStep();
 }
 
+function addRegistryRecord(event) {
+    event.preventDefault();
+
+    const formData = new FormData(elements.registryForm);
+    const type = formData.get("registryType").toString();
+    const name = formData.get("registryName").toString().trim();
+    const operator = formData.get("registryOperator").toString().trim();
+
+    registryRecords.unshift([type, name, operator, "Review"]);
+    elements.registryForm.reset();
+
+    eventHistory.unshift({
+        type: `${type}.created`,
+        message: `${name} added to operational register`,
+        time: formatTime()
+    });
+
+    saveState();
+    applyStep();
+}
+
 document.querySelectorAll(".nav-tab").forEach((tab) => {
     tab.addEventListener("click", () => {
         const view = tab.dataset.view;
@@ -561,5 +616,6 @@ elements.resetDemo.addEventListener("click", resetJourney);
 elements.routeForm.addEventListener("submit", addRoute);
 elements.documentForm.addEventListener("submit", addDocument);
 elements.ticketForm.addEventListener("submit", addTicket);
+elements.registryForm.addEventListener("submit", addRegistryRecord);
 
 applyStep();

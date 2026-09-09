@@ -7,6 +7,7 @@ This first version is deliberately small and usable:
 - Admin / staff control tower
 - Driver and bus operator route screen
 - Parent journey and account screen
+- Driver and vehicle register
 - Simulated journey events
 - Live state updates driven by those events
 - Browser persistence for demo-created routes, documents, tickets, and events
@@ -19,6 +20,7 @@ Open `index.html` through a local web server to try the prototype.
 
 - Manage schools, routes, stops, drivers, operators, vehicles, and pupils.
 - Monitor live route health, delays, incidents, and active journeys.
+- Add driver and vehicle records into the operational register.
 - Review compliance documents such as licences, bus insurance, CVRT certificates, and operator contracts.
 - Handle parent tickets, payments, reports, and audit logs.
 

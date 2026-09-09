@@ -295,6 +295,7 @@ main {
 .manifest,
 .admin-command,
 .planning-board,
+.registry-board,
 .document-queue,
 .operator-panel,
 .parent-actions,
@@ -352,7 +353,7 @@ main {
 }
 
 .admin-lower-grid {
-    grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.75fr);
+    grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.85fr);
     align-items: start;
 }
 
@@ -473,6 +474,7 @@ main {
 }
 
 .document-form,
+.registry-form,
 .ticket-form {
     display: grid;
     gap: 12px;
@@ -480,6 +482,7 @@ main {
 }
 
 .document-form label,
+.registry-form label,
 .ticket-form label {
     display: grid;
     gap: 6px;
@@ -491,6 +494,8 @@ main {
 
 .document-form input,
 .document-form select,
+.registry-form input,
+.registry-form select,
 .ticket-form textarea {
     width: 100%;
     border: 1px solid var(--line);
