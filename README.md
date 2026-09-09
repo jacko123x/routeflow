@@ -32,6 +32,7 @@ Open `index.html` through a local web server to try the prototype.
 - View assigned runs and route details.
 - Start journeys, mark stops, confirm pupils boarded, report delays, and complete routes.
 - See route-specific pupil pickup assignments from the admin route plan.
+- Mark individual pupils as boarded from the driver manifest.
 - Upload documents for drivers, vehicles, and operator contracts.
 - Track review status for submitted compliance items.
 - Current sections: Run Sheet, Documents, Payments.

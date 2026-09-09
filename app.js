@@ -397,14 +397,15 @@ function renderRoutes() {
 }
 
 function renderManifest() {
-    const boarded = stepIndex >= 3;
     const assignments = getSelectedAssignments();
 
-    elements.manifestList.innerHTML = assignments.map((assignment) => {
+    elements.manifestList.innerHTML = assignments.map((assignment, index) => {
         const isAbsent = assignment.state === "absent";
-        const label = isAbsent ? "Absent" : boarded ? "Boarded" : "Waiting";
+        const isBoarded = assignment.state === "boarded";
+        const label = isAbsent ? "Absent" : isBoarded ? "Boarded" : "Waiting";
         const rowClass = isAbsent ? "manifest-row absent" : "manifest-row";
-        const buttonLabel = isAbsent ? "Absent" : boarded ? "Done" : "Board";
+        const buttonLabel = isAbsent ? "Absent" : isBoarded ? "Done" : "Board";
+        const disabled = isAbsent || isBoarded ? " disabled" : "";
 
         return `
             <article class="${rowClass}">
@@ -412,10 +413,14 @@ function renderManifest() {
                     <strong>${assignment.pupil}</strong>
                     <span>${assignment.stop} - ${label}</span>
                 </div>
-                <button type="button">${buttonLabel}</button>
+                <button data-board-index="${index}" type="button"${disabled}>${buttonLabel}</button>
             </article>
         `;
     }).join("");
+
+    document.querySelectorAll("[data-board-index]").forEach((button) => {
+        button.addEventListener("click", () => boardPupil(Number(button.dataset.boardIndex)));
+    });
 }
 
 function renderSchedule() {
@@ -502,7 +507,11 @@ function renderStopAssignments() {
 
     elements.stopAssignmentList.innerHTML = assignments.map((assignment) => {
         const tone = assignment.state === "absent" ? "idle" : "";
-        const status = assignment.state === "absent" ? "Absent" : "Assigned";
+        const status = assignment.state === "absent"
+            ? "Absent"
+            : assignment.state === "boarded"
+                ? "Boarded"
+                : "Assigned";
 
         return `
             <article class="review-item">
@@ -539,10 +548,11 @@ function applyStep() {
     const route = getSelectedRoute();
     const assignments = getSelectedAssignments();
     const parentAssignment = assignments[0];
+    const boardedCount = assignments.filter((assignment) => assignment.state === "boarded").length;
     const step = stepIndex >= 0 ? journeySteps[stepIndex] : {
         routeState: route.status,
         busLeft: "16%",
-        pickedUp: route.pickedUp,
+        pickedUp: boardedCount || route.pickedUp,
         parentStatus: "Scheduled",
         parentEtaLabel: "Pickup ETA",
         parentEta: "08:04",
@@ -558,7 +568,7 @@ function applyStep() {
     elements.activeVehicle.textContent = route.vehicle;
     elements.routeStateLabel.textContent = step.routeState;
     elements.busMarker.style.left = step.busLeft;
-    elements.pickedUpCount.textContent = `${step.pickedUp} / ${route.pupils} picked up`;
+    elements.pickedUpCount.textContent = `${boardedCount || step.pickedUp} / ${route.pupils} picked up`;
     elements.driverStopName.textContent = step.driverStop;
     elements.driverDistance.textContent = step.driverDistance;
     elements.driverEta.textContent = step.driverEta;
@@ -650,6 +660,28 @@ function addStopAssignment(event) {
     eventHistory.unshift({
         type: "pickup.assigned",
         message: `${assignment.pupil} assigned to ${route.code} at ${assignment.stop}`,
+        time: formatTime()
+    });
+
+    saveState();
+    applyStep();
+}
+
+function boardPupil(index) {
+    const route = getSelectedRoute();
+    const assignments = getSelectedAssignments();
+    const assignment = assignments[index];
+
+    if (!assignment || assignment.state !== "pending") {
+        return;
+    }
+
+    assignment.state = "boarded";
+    route.pickedUp = assignments.filter((item) => item.state === "boarded").length;
+
+    eventHistory.unshift({
+        type: "pupil.boarded",
+        message: `${assignment.pupil} boarded ${route.code} at ${assignment.stop}`,
         time: formatTime()
     });
 
