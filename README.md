@@ -4,10 +4,45 @@ RouteFlow is a prototype for a real-time school transport platform connecting ad
 
 This first version is deliberately small and usable:
 
-- Operations control tower
-- Driver route screen
-- Parent journey screen
+- Admin / staff control tower
+- Driver and bus operator route screen
+- Parent journey and account screen
 - Simulated journey events
 - Live state updates driven by those events
+- Browser persistence for demo-created routes, documents, tickets, and events
 
 Open `index.html` through a local web server to try the prototype.
+
+## Product Areas
+
+### Admin / Staff
+
+- Manage schools, routes, stops, drivers, operators, vehicles, and pupils.
+- Monitor live route health, delays, incidents, and active journeys.
+- Review compliance documents such as licences, bus insurance, CVRT certificates, and operator contracts.
+- Handle parent tickets, payments, reports, and audit logs.
+
+### Driver / Bus Operator
+
+- View assigned runs and route details.
+- Start journeys, mark stops, confirm pupils boarded, report delays, and complete routes.
+- Upload documents for drivers, vehicles, and operator contracts.
+- Track review status for submitted compliance items.
+
+### Parent / Guardian
+
+- View live pickup/drop-off status and bus ETA.
+- Manage child and guardian details.
+- Pay fees, view tickets, manage notifications, and report absences.
+
+## Current Prototype
+
+The app is still frontend-only. Data is stored in `localStorage` so demo changes survive refreshes in the same browser.
+
+## Next Milestones
+
+1. Convert to a typed app structure with reusable components.
+2. Add a database schema for routes, stops, pupils, guardians, drivers, operators, vehicles, journeys, documents, tickets, payments, notifications, and audit logs.
+3. Add authentication and role-based portals.
+4. Build a real driver journey flow backed by stored journey events.
+5. Add parent notifications and payment tracking.

@@ -71,7 +71,9 @@ const journeySteps = [
     }
 ];
 
-const routes = [
+const storageKey = "routeflow-demo-state-v1";
+
+const defaultRoutes = [
     {
         code: "KY-014",
         school: "St Brendan's College",
@@ -142,18 +144,57 @@ const pupils = [
     ["Mia Keane", "pending"]
 ];
 
-const operatorDocuments = [
+const defaultOperatorDocuments = [
     ["Fleet insurance", "Kerry Coaches - 2026", "Approved"],
     ["CVRT Certificate", "Vehicle 232-KY-904", "Due Soon"]
 ];
 
-const tickets = [
+const defaultTickets = [
     ["Route query", "Can Emma use the Moyderwell stop on Friday?", "Open"]
 ];
 
-let selectedRouteIndex = 0;
-let stepIndex = -1;
-const eventHistory = [];
+function cloneDefault(value) {
+    return JSON.parse(JSON.stringify(value));
+}
+
+function loadState() {
+    const defaults = {
+        routes: cloneDefault(defaultRoutes),
+        operatorDocuments: cloneDefault(defaultOperatorDocuments),
+        tickets: cloneDefault(defaultTickets),
+        selectedRouteIndex: 0,
+        stepIndex: -1,
+        eventHistory: []
+    };
+
+    try {
+        const savedState = JSON.parse(localStorage.getItem(storageKey));
+
+        if (!savedState || !Array.isArray(savedState.routes) || savedState.routes.length === 0) {
+            return defaults;
+        }
+
+        return {
+            ...defaults,
+            ...savedState,
+            operatorDocuments: Array.isArray(savedState.operatorDocuments)
+                ? savedState.operatorDocuments
+                : defaults.operatorDocuments,
+            tickets: Array.isArray(savedState.tickets) ? savedState.tickets : defaults.tickets,
+            eventHistory: Array.isArray(savedState.eventHistory) ? savedState.eventHistory : defaults.eventHistory
+        };
+    } catch {
+        return defaults;
+    }
+}
+
+const state = loadState();
+const routes = state.routes;
+const operatorDocuments = state.operatorDocuments;
+const tickets = state.tickets;
+let selectedRouteIndex = Math.max(0, Math.min(state.selectedRouteIndex, routes.length - 1));
+let stepIndex = state.stepIndex;
+const eventHistory = state.eventHistory;
 
 const views = {
     operations: "Admin Control",
@@ -198,6 +239,27 @@ function getSelectedRoute() {
     return routes[selectedRouteIndex];
 }
 
+function saveState() {
+    localStorage.setItem(storageKey, JSON.stringify({
+        routes,
+        operatorDocuments,
+        tickets,
+        selectedRouteIndex,
+        stepIndex,
+        eventHistory: eventHistory.slice(0, 50)
+    }));
+}
+
+function restoreDefaults() {
+    routes.splice(0, routes.length, ...cloneDefault(defaultRoutes));
+    operatorDocuments.splice(0, operatorDocuments.length, ...cloneDefault(defaultOperatorDocuments));
+    tickets.splice(0, tickets.length, ...cloneDefault(defaultTickets));
+    selectedRouteIndex = 0;
+    stepIndex = -1;
+    eventHistory.length = 0;
+    localStorage.removeItem(storageKey);
+}
+
 function getRouteStatus(route, index) {
     if (index === selectedRouteIndex && stepIndex >= 0) {
         return journeySteps[stepIndex].routeState;
@@ -230,6 +292,7 @@ function selectRoute(index) {
         message: `${routes[index].code} selected for review`,
         time: formatTime()
     });
+    saveState();
     applyStep();
 }
 
@@ -392,12 +455,12 @@ function advanceJourney() {
 
     stepIndex += 1;
     logEvent(journeySteps[stepIndex]);
+    saveState();
     applyStep();
 }
 
 function resetJourney() {
-    stepIndex = -1;
-    eventHistory.length = 0;
+    restoreDefaults();
     applyStep();
 }
 
@@ -430,6 +493,7 @@ function addRoute(event) {
         time: formatTime()
     });
 
+    saveState();
     applyStep();
 }
 
@@ -449,6 +513,7 @@ function addDocument(event) {
         time: formatTime()
     });
 
+    saveState();
     applyStep();
 }
 
@@ -470,6 +535,7 @@ function addTicket(event) {
         time: formatTime()
     });
 
+    saveState();
     applyStep();
 }
 
