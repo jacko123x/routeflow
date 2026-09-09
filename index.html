@@ -33,8 +33,8 @@
             </div>
 
             <nav class="nav-tabs" aria-label="Views">
-                <button class="nav-tab active" data-view="operations" type="button">Operations</button>
-                <button class="nav-tab" data-view="driver" type="button">Driver</button>
+                <button class="nav-tab active" data-view="operations" type="button">Admin</button>
+                <button class="nav-tab" data-view="driver" type="button">Driver / Operator</button>
                 <button class="nav-tab" data-view="parent" type="button">Parent</button>
                 <button class="nav-tab" data-view="events" type="button">Events</button>
             </nav>
@@ -83,6 +83,35 @@
                     </article>
                 </div>
 
+                <section class="admin-command">
+                    <div class="section-heading">
+                        <h3>Admin Workspace</h3>
+                        <span>Staff controls</span>
+                    </div>
+                    <div class="command-grid">
+                        <article class="command-tile">
+                            <span>Route Network</span>
+                            <strong>127 active routes</strong>
+                            <button class="secondary-action" type="button">Manage Routes</button>
+                        </article>
+                        <article class="command-tile">
+                            <span>Drivers</span>
+                            <strong>84 approved</strong>
+                            <button class="secondary-action" type="button">Assign Drivers</button>
+                        </article>
+                        <article class="command-tile">
+                            <span>Vehicles</span>
+                            <strong>91 compliant</strong>
+                            <button class="secondary-action" type="button">Review Fleet</button>
+                        </article>
+                        <article class="command-tile">
+                            <span>Operators</span>
+                            <strong>16 companies</strong>
+                            <button class="secondary-action" type="button">View Operators</button>
+                        </article>
+                    </div>
+                </section>
+
                 <div class="content-grid">
                     <section class="route-board">
                         <div class="section-heading">
@@ -113,6 +142,7 @@
                     </section>
                 </div>
 
+                <div class="admin-lower-grid">
                 <section class="planning-board">
                     <div class="section-heading">
                         <h3>Schedule Builder</h3>
@@ -148,6 +178,37 @@
                         <div id="scheduleRows"></div>
                     </div>
                 </section>
+
+                <section class="document-queue">
+                    <div class="section-heading">
+                        <h3>Compliance Queue</h3>
+                        <span>Needs staff review</span>
+                    </div>
+                    <div class="review-list">
+                        <article class="review-item">
+                            <div>
+                                <strong>CVRT Certificate</strong>
+                                <span>Vehicle 232-KY-904 - Kingdom Bus</span>
+                            </div>
+                            <span class="route-status watch">Due Soon</span>
+                        </article>
+                        <article class="review-item">
+                            <div>
+                                <strong>Operator Contract</strong>
+                                <span>Kerry Coaches - 2026 term</span>
+                            </div>
+                            <span class="route-status idle">Pending</span>
+                        </article>
+                        <article class="review-item">
+                            <div>
+                                <strong>Driver Licence</strong>
+                                <span>Aoife Griffin - category D</span>
+                            </div>
+                            <span class="route-status late">Expired</span>
+                        </article>
+                    </div>
+                </section>
+                </div>
             </section>
 
             <section id="driver" class="view">
@@ -170,9 +231,55 @@
                         <div id="manifestList" class="manifest-list"></div>
                     </section>
                 </div>
+
+                <div class="operator-grid">
+                    <section class="operator-panel">
+                        <div class="section-heading">
+                            <h3>Today&apos;s Runs</h3>
+                            <span>Operator view</span>
+                        </div>
+                        <div class="run-list">
+                            <article class="run-item active">
+                                <strong>KY-014</strong>
+                                <span>07:45 - St Brendan&apos;s College</span>
+                                <span class="route-status idle">Assigned</span>
+                            </article>
+                            <article class="run-item">
+                                <strong>KY-041</strong>
+                                <span>08:05 - Mercy Mounthawk</span>
+                                <span class="route-status">Ready</span>
+                            </article>
+                        </div>
+                    </section>
+
+                    <section class="operator-panel">
+                        <div class="section-heading">
+                            <h3>Document Upload</h3>
+                            <span>Contracts and fleet</span>
+                        </div>
+                        <form id="documentForm" class="document-form">
+                            <label>
+                                Document Type
+                                <select id="documentType" name="documentType">
+                                    <option>Bus Insurance</option>
+                                    <option>CVRT Certificate</option>
+                                    <option>Driver Licence</option>
+                                    <option>Operator Contract</option>
+                                </select>
+                            </label>
+                            <label>
+                                Reference
+                                <input id="documentReference" name="documentReference" placeholder="Vehicle or contract ref">
+                            </label>
+                            <button class="primary-action" type="submit">Add To Review</button>
+                        </form>
+                        <div id="operatorDocumentList" class="review-list"></div>
+                    </section>
+                </div>
             </section>
 
             <section id="parent" class="view">
+                <div class="parent-layout">
                 <div class="parent-phone">
                     <div class="phone-top">
                         <span>Good morning</span>
@@ -197,6 +304,44 @@
                             <div><dt>Vehicle</dt><dd id="parentVehicle">241-KY-123</dd></div>
                         </dl>
                     </div>
+                </div>
+                <section class="parent-actions">
+                    <div class="section-heading">
+                        <h3>Family Account</h3>
+                        <span>Guardian tools</span>
+                    </div>
+                    <div class="parent-action-grid">
+                        <article class="parent-action-card">
+                            <span>Balance Due</span>
+                            <strong>EUR 48.00</strong>
+                            <button class="primary-action" type="button">Pay Now</button>
+                        </article>
+                        <article class="parent-action-card">
+                            <span>Open Tickets</span>
+                            <strong>1 active</strong>
+                            <button class="secondary-action" type="button">View Tickets</button>
+                        </article>
+                        <article class="parent-action-card">
+                            <span>Notifications</span>
+                            <strong>Pickup alerts on</strong>
+                            <button class="secondary-action" type="button">Manage Alerts</button>
+                        </article>
+                        <article class="parent-action-card">
+                            <span>Absence</span>
+                            <strong>Today available</strong>
+                            <button class="secondary-action" type="button">Report Absence</button>
+                        </article>
+                    </div>
+
+                    <form id="ticketForm" class="ticket-form">
+                        <label>
+                            Support Ticket
+                            <textarea id="ticketMessage" name="ticketMessage" rows="4" placeholder="Pickup change, payment query, route question"></textarea>
+                        </label>
+                        <button class="primary-action" type="submit">Create Ticket</button>
+                    </form>
+                    <div id="ticketList" class="review-list"></div>
+                </section>
                 </div>
             </section>
 

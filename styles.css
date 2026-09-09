@@ -293,7 +293,11 @@ main {
 .journey-detail,
 .next-stop,
 .manifest,
+.admin-command,
 .planning-board,
+.document-queue,
+.operator-panel,
+.parent-actions,
 #events {
     background: var(--panel);
     border: 1px solid var(--line);
@@ -303,6 +307,67 @@ main {
 
 .planning-board {
     margin-top: 18px;
+}
+
+.admin-command {
+    margin-bottom: 18px;
+}
+
+.command-grid,
+.operator-grid,
+.parent-layout,
+.parent-action-grid,
+.admin-lower-grid {
+    display: grid;
+    gap: 18px;
+}
+
+.command-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.command-tile,
+.parent-action-card {
+    display: grid;
+    gap: 12px;
+    align-content: start;
+    min-height: 132px;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fffaf0;
+}
+
+.command-tile span,
+.parent-action-card span {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.command-tile strong,
+.parent-action-card strong {
+    font-size: 20px;
+}
+
+.admin-lower-grid {
+    grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.75fr);
+    align-items: start;
+}
+
+.operator-grid {
+    grid-template-columns: minmax(320px, 0.85fr) minmax(360px, 1fr);
+    margin-top: 18px;
+}
+
+.parent-layout {
+    grid-template-columns: minmax(320px, 0.8fr) minmax(360px, 1.2fr);
+    align-items: start;
+}
+
+.parent-action-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .section-heading {
@@ -323,7 +388,9 @@ main {
 }
 
 .route-list,
-.manifest-list {
+.manifest-list,
+.review-list,
+.run-list {
     display: grid;
     gap: 10px;
 }
@@ -403,6 +470,82 @@ main {
     gap: 12px;
     align-items: end;
     margin-bottom: 18px;
+}
+
+.document-form,
+.ticket-form {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.document-form label,
+.ticket-form label {
+    display: grid;
+    gap: 6px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.document-form input,
+.document-form select,
+.ticket-form textarea {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 11px 12px;
+    color: var(--ink);
+    background: #fffaf0;
+    font: inherit;
+}
+
+.ticket-form textarea {
+    resize: vertical;
+}
+
+.review-item,
+.run-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: center;
+    min-height: 62px;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-left: 6px solid var(--green);
+    border-radius: 8px;
+    background: #fffaf0;
+}
+
+.review-item:has(.route-status.watch),
+.run-item:has(.route-status.watch) {
+    border-left-color: var(--amber);
+}
+
+.review-item:has(.route-status.late),
+.run-item:has(.route-status.late) {
+    border-left-color: var(--red);
+}
+
+.review-item:has(.route-status.idle),
+.run-item:has(.route-status.idle) {
+    border-left-color: var(--charcoal-soft);
+}
+
+.review-item strong,
+.run-item strong {
+    display: block;
+}
+
+.review-item span,
+.run-item span {
+    color: var(--muted);
+}
+
+.run-item.active {
+    border-color: var(--green);
 }
 
 .route-form label {
@@ -686,7 +829,11 @@ dd {
 @media (max-width: 960px) {
     .app-shell,
     .content-grid,
-    .driver-layout {
+    .driver-layout,
+    .command-grid,
+    .operator-grid,
+    .parent-layout,
+    .admin-lower-grid {
         grid-template-columns: 1fr;
     }
 
@@ -721,6 +868,7 @@ dd {
 
     .summary-grid,
     .detail-grid,
+    .parent-action-grid,
     .route-form {
         grid-template-columns: 1fr;
     }

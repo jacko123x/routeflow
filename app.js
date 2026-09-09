@@ -142,14 +142,23 @@ const pupils = [
     ["Mia Keane", "pending"]
 ];
 
+const operatorDocuments = [
+    ["Fleet insurance", "Kerry Coaches - 2026", "Approved"],
+    ["CVRT Certificate", "Vehicle 232-KY-904", "Due Soon"]
+];
+
+const tickets = [
+    ["Route query", "Can Emma use the Moyderwell stop on Friday?", "Open"]
+];
+
 let selectedRouteIndex = 0;
 let stepIndex = -1;
 const eventHistory = [];
 
 const views = {
-    operations: "Operations Control",
-    driver: "Driver Route",
-    parent: "Parent Journey",
+    operations: "Admin Control",
+    driver: "Driver / Operator Portal",
+    parent: "Parent Portal",
     events: "Event Stream"
 };
 
@@ -159,7 +168,11 @@ const elements = {
     manifestList: document.querySelector("#manifestList"),
     eventLog: document.querySelector("#eventLog"),
     scheduleRows: document.querySelector("#scheduleRows"),
+    operatorDocumentList: document.querySelector("#operatorDocumentList"),
+    ticketList: document.querySelector("#ticketList"),
     routeForm: document.querySelector("#routeForm"),
+    documentForm: document.querySelector("#documentForm"),
+    ticketForm: document.querySelector("#ticketForm"),
     addRouteButton: document.querySelector("#addRouteButton"),
     advanceDemo: document.querySelector("#advanceDemo"),
     resetDemo: document.querySelector("#resetDemo"),
@@ -285,6 +298,34 @@ function renderSchedule() {
     });
 }
 
+function renderOperatorDocuments() {
+    elements.operatorDocumentList.innerHTML = operatorDocuments.map(([name, reference, status]) => {
+        const tone = status === "Approved" ? "" : status === "Due Soon" ? "watch" : "idle";
+
+        return `
+            <article class="review-item">
+                <div>
+                    <strong>${name}</strong>
+                    <span>${reference}</span>
+                </div>
+                <span class="route-status ${tone}">${status}</span>
+            </article>
+        `;
+    }).join("");
+}
+
+function renderTickets() {
+    elements.ticketList.innerHTML = tickets.map(([subject, message, status]) => `
+        <article class="review-item">
+            <div>
+                <strong>${subject}</strong>
+                <span>${message}</span>
+            </div>
+            <span class="route-status idle">${status}</span>
+        </article>
+    `).join("");
+}
+
 function logEvent(step) {
     const route = getSelectedRoute();
 
@@ -339,6 +380,8 @@ function applyStep() {
     renderRoutes();
     renderManifest();
     renderSchedule();
+    renderOperatorDocuments();
+    renderTickets();
     renderEvents();
 }
 
@@ -390,6 +433,46 @@ function addRoute(event) {
     applyStep();
 }
 
+function addDocument(event) {
+    event.preventDefault();
+
+    const formData = new FormData(elements.documentForm);
+    const documentType = formData.get("documentType").toString();
+    const reference = formData.get("documentReference").toString().trim() || "General operator upload";
+
+    operatorDocuments.unshift([documentType, reference, "Pending"]);
+    elements.documentForm.reset();
+
+    eventHistory.unshift({
+        type: "document.uploaded",
+        message: `${documentType} added to compliance review`,
+        time: formatTime()
+    });
+
+    applyStep();
+}
+
+function addTicket(event) {
+    event.preventDefault();
+
+    const message = new FormData(elements.ticketForm).get("ticketMessage").toString().trim();
+
+    if (!message) {
+        return;
+    }
+
+    tickets.unshift(["Parent support", message, "Open"]);
+    elements.ticketForm.reset();
+
+    eventHistory.unshift({
+        type: "ticket.created",
+        message: "Parent support ticket created",
+        time: formatTime()
+    });
+
+    applyStep();
+}
+
 document.querySelectorAll(".nav-tab").forEach((tab) => {
     tab.addEventListener("click", () => {
         const view = tab.dataset.view;
@@ -410,5 +493,7 @@ elements.advanceDemo.addEventListener("click", advanceJourney);
 elements.driverAction.addEventListener("click", advanceJourney);
 elements.resetDemo.addEventListener("click", resetJourney);
 elements.routeForm.addEventListener("submit", addRoute);
+elements.documentForm.addEventListener("submit", addDocument);
+elements.ticketForm.addEventListener("submit", addTicket);
 
 applyStep();
