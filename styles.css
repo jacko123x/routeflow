@@ -6,6 +6,8 @@
     --surface: #f4efd9;
     --green: #007a3d;
     --green-dark: #005f32;
+    --charcoal: #202624;
+    --charcoal-soft: #2d3532;
     --amber: #f2b705;
     --red: #d71920;
     --blue: #2f6fbd;
@@ -36,7 +38,7 @@ button {
 }
 
 .sidebar {
-    background: var(--green-dark);
+    background: var(--charcoal);
     color: #f9fbfc;
     padding: 24px;
     display: flex;
@@ -58,7 +60,7 @@ button {
     border-radius: 8px;
     background: #fff7cf;
     border: 3px solid var(--amber);
-    box-shadow: inset 0 -5px 0 rgba(0, 122, 61, 0.15);
+    box-shadow: inset 0 -5px 0 rgba(215, 25, 32, 0.18);
 }
 
 .brand-mark svg {
@@ -163,6 +165,16 @@ button {
     display: flex;
     justify-content: space-between;
     color: #ecf5e8;
+    border-left: 4px solid var(--green);
+    padding-left: 10px;
+}
+
+.metric-list div:nth-child(3) {
+    border-left-color: var(--amber);
+}
+
+.metric-list div:nth-child(4) {
+    border-left-color: var(--red);
 }
 
 main {
@@ -332,6 +344,7 @@ main {
 .route-row {
     width: 100%;
     text-align: left;
+    border-left: 6px solid var(--green);
 }
 
 .route-row.active {
@@ -350,16 +363,39 @@ main {
 
 .route-status {
     border-radius: 999px;
-    padding: 5px 9px;
+    min-width: 96px;
+    padding: 7px 10px;
     color: #ffffff;
     background: var(--green);
     font-size: 12px;
     font-weight: 800;
+    text-align: center;
 }
 
-.route-status.watch { background: var(--amber); }
-.route-status.late { background: var(--red); }
-.route-status.idle { background: var(--muted); }
+.route-row:has(.route-status.watch) {
+    border-left-color: var(--amber);
+}
+
+.route-row:has(.route-status.late) {
+    border-left-color: var(--red);
+}
+
+.route-row:has(.route-status.idle) {
+    border-left-color: var(--charcoal-soft);
+}
+
+.route-status.watch {
+    color: #231c05;
+    background: var(--amber);
+}
+
+.route-status.late {
+    background: var(--red);
+}
+
+.route-status.idle {
+    background: var(--charcoal-soft);
+}
 
 .route-form {
     display: grid;
