@@ -149,6 +149,42 @@
                             <div><span>Vehicle</span><strong id="activeVehicle">241-KY-123</strong></div>
                             <div><span>Pupils</span><strong id="pickedUpCount">0 / 23 picked up</strong></div>
                         </div>
+                        <form id="assignmentForm" class="assignment-form">
+                            <div class="section-heading compact-heading">
+                                <h3>Assignment Editor</h3>
+                                <span>Selected route</span>
+                            </div>
+                            <div class="assignment-grid">
+                                <label>
+                                    Operator
+                                    <input id="assignmentOperator" name="operator" required>
+                                </label>
+                                <label>
+                                    Driver
+                                    <input id="assignmentDriver" name="driver" required>
+                                </label>
+                                <label>
+                                    Vehicle
+                                    <input id="assignmentVehicle" name="vehicle" required>
+                                </label>
+                                <label>
+                                    Pupils
+                                    <input id="assignmentPupils" name="pupils" min="0" required type="number">
+                                </label>
+                                <label>
+                                    Status
+                                    <select id="assignmentStatus" name="status">
+                                        <option value="Preparing">Preparing</option>
+                                        <option value="Not started">Not started</option>
+                                        <option value="On time">On time</option>
+                                        <option value="+11 min">+11 min</option>
+                                        <option value="Incident">Incident</option>
+                                        <option value="Completed">Completed</option>
+                                    </select>
+                                </label>
+                                <button class="primary-action" type="submit">Update Assignment</button>
+                            </div>
+                        </form>
                     </section>
                 </div>
 

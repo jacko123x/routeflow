@@ -21,6 +21,7 @@ Open `index.html` through a local web server to try the prototype.
 - Manage schools, routes, stops, drivers, operators, vehicles, and pupils.
 - Monitor live route health, delays, incidents, and active journeys.
 - Add driver and vehicle records into the operational register.
+- Update selected route assignments including operator, driver, vehicle, pupil count, and route status.
 - Review compliance documents such as licences, bus insurance, CVRT certificates, and operator contracts.
 - Handle parent tickets, payments, reports, and audit logs.
 - Current sections: Overview, Routes, People, Compliance.

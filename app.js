@@ -225,9 +225,15 @@ const elements = {
     ticketList: document.querySelector("#ticketList"),
     registryList: document.querySelector("#registryList"),
     routeForm: document.querySelector("#routeForm"),
+    assignmentForm: document.querySelector("#assignmentForm"),
     documentForm: document.querySelector("#documentForm"),
     ticketForm: document.querySelector("#ticketForm"),
     registryForm: document.querySelector("#registryForm"),
+    assignmentOperator: document.querySelector("#assignmentOperator"),
+    assignmentDriver: document.querySelector("#assignmentDriver"),
+    assignmentVehicle: document.querySelector("#assignmentVehicle"),
+    assignmentPupils: document.querySelector("#assignmentPupils"),
+    assignmentStatus: document.querySelector("#assignmentStatus"),
     addRouteButton: document.querySelector("#addRouteButton"),
     advanceDemo: document.querySelector("#advanceDemo"),
     resetDemo: document.querySelector("#resetDemo"),
@@ -290,6 +296,30 @@ function getRouteTone(route, index) {
     }
 
     return route.tone;
+}
+
+function getToneForStatus(status) {
+    if (status.includes("Incident")) {
+        return "late";
+    }
+
+    if (status.includes("+") || status.includes("Delay")) {
+        return "watch";
+    }
+
+    if (status.includes("Preparing") || status.includes("Not started")) {
+        return "idle";
+    }
+
+    return "";
+}
+
+function syncAssignmentForm(route) {
+    elements.assignmentOperator.value = route.operator;
+    elements.assignmentDriver.value = route.driver;
+    elements.assignmentVehicle.value = route.vehicle;
+    elements.assignmentPupils.value = route.pupils;
+    elements.assignmentStatus.value = route.status;
 }
 
 function formatTime() {
@@ -472,6 +502,7 @@ function applyStep() {
     elements.parentStatus.textContent = step.parentStatus;
     elements.parentEtaLabel.textContent = step.parentEtaLabel;
     elements.parentEta.textContent = step.parentEta;
+    syncAssignmentForm(route);
 
     renderRoutes();
     renderManifest();
@@ -524,6 +555,30 @@ function addRoute(event) {
     eventHistory.unshift({
         type: "route.created",
         message: `${route.code} created for ${route.school}`,
+        time: formatTime()
+    });
+
+    saveState();
+    applyStep();
+}
+
+function updateAssignment(event) {
+    event.preventDefault();
+
+    const formData = new FormData(elements.assignmentForm);
+    const route = getSelectedRoute();
+
+    route.operator = formData.get("operator").toString().trim();
+    route.driver = formData.get("driver").toString().trim();
+    route.vehicle = formData.get("vehicle").toString().trim();
+    route.pupils = Number(formData.get("pupils"));
+    route.status = formData.get("status").toString();
+    route.tone = getToneForStatus(route.status);
+    stepIndex = -1;
+
+    eventHistory.unshift({
+        type: "route.assignment.updated",
+        message: `${route.code} assigned to ${route.driver} / ${route.vehicle}`,
         time: formatTime()
     });
 
@@ -642,6 +697,7 @@ elements.advanceDemo.addEventListener("click", advanceJourney);
 elements.driverAction.addEventListener("click", advanceJourney);
 elements.resetDemo.addEventListener("click", resetJourney);
 elements.routeForm.addEventListener("submit", addRoute);
+elements.assignmentForm.addEventListener("submit", updateAssignment);
 elements.documentForm.addEventListener("submit", addDocument);
 elements.ticketForm.addEventListener("submit", addTicket);
 elements.registryForm.addEventListener("submit", addRegistryRecord);
