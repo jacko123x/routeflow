@@ -136,14 +136,6 @@ const defaultRoutes = [
     }
 ];
 
-const pupils = [
-    ["Emma Murphy", "pending"],
-    ["Daniel O'Shea", "pending"],
-    ["Sarah Walsh", "absent"],
-    ["Tom Barrett", "pending"],
-    ["Mia Keane", "pending"]
-];
-
 const defaultOperatorDocuments = [
     ["Fleet insurance", "Kerry Coaches - 2026", "Approved"],
     ["CVRT Certificate", "Vehicle 232-KY-904", "Due Soon"]
@@ -160,6 +152,24 @@ const defaultRegistryRecords = [
     ["vehicle", "232-KY-904", "Kingdom Bus", "Due Soon"]
 ];
 
+const defaultStopAssignments = {
+    "KY-014": [
+        { pupil: "Emma Murphy", stop: "Oakpark Road", guardian: "Laura Murphy", state: "pending" },
+        { pupil: "Daniel O'Shea", stop: "Oakpark Road", guardian: "Brian O'Shea", state: "pending" },
+        { pupil: "Sarah Walsh", stop: "Manor West", guardian: "Clare Walsh", state: "absent" },
+        { pupil: "Tom Barrett", stop: "Moyderwell", guardian: "Aidan Barrett", state: "pending" },
+        { pupil: "Mia Keane", stop: "Moyderwell", guardian: "Siobhan Keane", state: "pending" }
+    ],
+    "KY-021": [
+        { pupil: "Ava Nolan", stop: "Listowel Road", guardian: "Mark Nolan", state: "pending" },
+        { pupil: "Jack Foley", stop: "Ballymullen", guardian: "Niamh Foley", state: "pending" }
+    ],
+    "KY-032": [
+        { pupil: "Cian Daly", stop: "Castle Street", guardian: "Eimear Daly", state: "pending" },
+        { pupil: "Noah Casey", stop: "Boherbee", guardian: "Paul Casey", state: "pending" }
+    ]
+};
+
 function cloneDefault(value) {
     return JSON.parse(JSON.stringify(value));
 }
@@ -170,6 +180,7 @@ function loadState() {
         operatorDocuments: cloneDefault(defaultOperatorDocuments),
         tickets: cloneDefault(defaultTickets),
         registryRecords: cloneDefault(defaultRegistryRecords),
+        stopAssignments: cloneDefault(defaultStopAssignments),
         selectedRouteIndex: 0,
         stepIndex: -1,
         eventHistory: []
@@ -192,6 +203,9 @@ function loadState() {
             registryRecords: Array.isArray(savedState.registryRecords)
                 ? savedState.registryRecords
                 : defaults.registryRecords,
+            stopAssignments: savedState.stopAssignments && typeof savedState.stopAssignments === "object"
+                ? savedState.stopAssignments
+                : defaults.stopAssignments,
             eventHistory: Array.isArray(savedState.eventHistory) ? savedState.eventHistory : defaults.eventHistory
         };
     } catch {
@@ -204,6 +218,7 @@ const routes = state.routes;
 const operatorDocuments = state.operatorDocuments;
 const tickets = state.tickets;
 const registryRecords = state.registryRecords;
+const stopAssignments = state.stopAssignments;
 let selectedRouteIndex = Math.max(0, Math.min(state.selectedRouteIndex, routes.length - 1));
 let stepIndex = state.stepIndex;
 const eventHistory = state.eventHistory;
@@ -224,8 +239,10 @@ const elements = {
     operatorDocumentList: document.querySelector("#operatorDocumentList"),
     ticketList: document.querySelector("#ticketList"),
     registryList: document.querySelector("#registryList"),
+    stopAssignmentList: document.querySelector("#stopAssignmentList"),
     routeForm: document.querySelector("#routeForm"),
     assignmentForm: document.querySelector("#assignmentForm"),
+    stopForm: document.querySelector("#stopForm"),
     documentForm: document.querySelector("#documentForm"),
     ticketForm: document.querySelector("#ticketForm"),
     registryForm: document.querySelector("#registryForm"),
@@ -250,6 +267,7 @@ const elements = {
     driverAction: document.querySelector("#driverAction"),
     parentDriver: document.querySelector("#parentDriver"),
     parentVehicle: document.querySelector("#parentVehicle"),
+    parentPickup: document.querySelector("#parentPickup"),
     parentStatus: document.querySelector("#parentStatus"),
     parentEtaLabel: document.querySelector("#parentEtaLabel"),
     parentEta: document.querySelector("#parentEta")
@@ -259,12 +277,23 @@ function getSelectedRoute() {
     return routes[selectedRouteIndex];
 }
 
+function getSelectedAssignments() {
+    const route = getSelectedRoute();
+
+    if (!stopAssignments[route.code]) {
+        stopAssignments[route.code] = [];
+    }
+
+    return stopAssignments[route.code];
+}
+
 function saveState() {
     localStorage.setItem(storageKey, JSON.stringify({
         routes,
         operatorDocuments,
         tickets,
         registryRecords,
+        stopAssignments,
         selectedRouteIndex,
         stepIndex,
         eventHistory: eventHistory.slice(0, 50)
@@ -276,6 +305,8 @@ function restoreDefaults() {
     operatorDocuments.splice(0, operatorDocuments.length, ...cloneDefault(defaultOperatorDocuments));
     tickets.splice(0, tickets.length, ...cloneDefault(defaultTickets));
     registryRecords.splice(0, registryRecords.length, ...cloneDefault(defaultRegistryRecords));
+    Object.keys(stopAssignments).forEach((key) => delete stopAssignments[key]);
+    Object.assign(stopAssignments, cloneDefault(defaultStopAssignments));
     selectedRouteIndex = 0;
     stepIndex = -1;
     eventHistory.length = 0;
@@ -367,9 +398,10 @@ function renderRoutes() {
 
 function renderManifest() {
     const boarded = stepIndex >= 3;
+    const assignments = getSelectedAssignments();
 
-    elements.manifestList.innerHTML = pupils.map(([name, state]) => {
-        const isAbsent = state === "absent";
+    elements.manifestList.innerHTML = assignments.map((assignment) => {
+        const isAbsent = assignment.state === "absent";
         const label = isAbsent ? "Absent" : boarded ? "Boarded" : "Waiting";
         const rowClass = isAbsent ? "manifest-row absent" : "manifest-row";
         const buttonLabel = isAbsent ? "Absent" : boarded ? "Done" : "Board";
@@ -377,8 +409,8 @@ function renderManifest() {
         return `
             <article class="${rowClass}">
                 <div>
-                    <strong>${name}</strong>
-                    <span>${label}</span>
+                    <strong>${assignment.pupil}</strong>
+                    <span>${assignment.stop} - ${label}</span>
                 </div>
                 <button type="button">${buttonLabel}</button>
             </article>
@@ -452,6 +484,38 @@ function renderRegistryRecords() {
     }).join("");
 }
 
+function renderStopAssignments() {
+    const assignments = getSelectedAssignments();
+
+    if (assignments.length === 0) {
+        elements.stopAssignmentList.innerHTML = `
+            <article class="review-item">
+                <div>
+                    <strong>No pickups assigned</strong>
+                    <span>Add pupils to build the run sheet</span>
+                </div>
+                <span class="route-status idle">Empty</span>
+            </article>
+        `;
+        return;
+    }
+
+    elements.stopAssignmentList.innerHTML = assignments.map((assignment) => {
+        const tone = assignment.state === "absent" ? "idle" : "";
+        const status = assignment.state === "absent" ? "Absent" : "Assigned";
+
+        return `
+            <article class="review-item">
+                <div>
+                    <strong>${assignment.pupil}</strong>
+                    <span>${assignment.stop} - ${assignment.guardian}</span>
+                </div>
+                <span class="route-status ${tone}">${status}</span>
+            </article>
+        `;
+    }).join("");
+}
+
 function logEvent(step) {
     const route = getSelectedRoute();
 
@@ -473,6 +537,8 @@ function renderEvents() {
 
 function applyStep() {
     const route = getSelectedRoute();
+    const assignments = getSelectedAssignments();
+    const parentAssignment = assignments[0];
     const step = stepIndex >= 0 ? journeySteps[stepIndex] : {
         routeState: route.status,
         busLeft: "16%",
@@ -499,6 +565,7 @@ function applyStep() {
     elements.driverAction.textContent = step.action;
     elements.parentDriver.textContent = route.driver.split(" ")[0];
     elements.parentVehicle.textContent = route.vehicle;
+    elements.parentPickup.textContent = parentAssignment ? parentAssignment.stop : "Unassigned";
     elements.parentStatus.textContent = step.parentStatus;
     elements.parentEtaLabel.textContent = step.parentEtaLabel;
     elements.parentEta.textContent = step.parentEta;
@@ -510,6 +577,7 @@ function applyStep() {
     renderOperatorDocuments();
     renderTickets();
     renderRegistryRecords();
+    renderStopAssignments();
     renderEvents();
 }
 
@@ -547,6 +615,7 @@ function addRoute(event) {
     };
 
     routes.unshift(route);
+    stopAssignments[route.code] = [];
     selectedRouteIndex = 0;
     stepIndex = -1;
     elements.routeForm.reset();
@@ -555,6 +624,32 @@ function addRoute(event) {
     eventHistory.unshift({
         type: "route.created",
         message: `${route.code} created for ${route.school}`,
+        time: formatTime()
+    });
+
+    saveState();
+    applyStep();
+}
+
+function addStopAssignment(event) {
+    event.preventDefault();
+
+    const formData = new FormData(elements.stopForm);
+    const route = getSelectedRoute();
+    const assignment = {
+        pupil: formData.get("pupil").toString().trim(),
+        stop: formData.get("stop").toString().trim(),
+        guardian: formData.get("guardian").toString().trim(),
+        state: "pending"
+    };
+
+    getSelectedAssignments().push(assignment);
+    route.pupils = getSelectedAssignments().length;
+    elements.stopForm.reset();
+
+    eventHistory.unshift({
+        type: "pickup.assigned",
+        message: `${assignment.pupil} assigned to ${route.code} at ${assignment.stop}`,
         time: formatTime()
     });
 
@@ -698,6 +793,7 @@ elements.driverAction.addEventListener("click", advanceJourney);
 elements.resetDemo.addEventListener("click", resetJourney);
 elements.routeForm.addEventListener("submit", addRoute);
 elements.assignmentForm.addEventListener("submit", updateAssignment);
+elements.stopForm.addEventListener("submit", addStopAssignment);
 elements.documentForm.addEventListener("submit", addDocument);
 elements.ticketForm.addEventListener("submit", addTicket);
 elements.registryForm.addEventListener("submit", addRegistryRecord);

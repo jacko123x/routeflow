@@ -541,6 +541,10 @@ main {
     margin-top: 4px;
 }
 
+.stop-planner {
+    margin-top: 4px;
+}
+
 .assignment-grid {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -554,6 +558,7 @@ main {
 
 .document-form,
 .registry-form,
+.stop-form,
 .ticket-form {
     display: grid;
     gap: 12px;
@@ -563,6 +568,7 @@ main {
 .document-form label,
 .assignment-grid label,
 .registry-form label,
+.stop-form label,
 .ticket-form label {
     display: grid;
     gap: 6px;
@@ -578,6 +584,7 @@ main {
 .assignment-grid select,
 .registry-form input,
 .registry-form select,
+.stop-form input,
 .ticket-form textarea {
     width: 100%;
     border: 1px solid var(--line);
@@ -589,6 +596,15 @@ main {
 }
 
 .assignment-grid button {
+    min-height: 43px;
+}
+
+.stop-form {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+    align-items: end;
+}
+
+.stop-form button {
     min-height: 43px;
 }
 
@@ -970,11 +986,19 @@ dd {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
+    .stop-form {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     .route-form button {
         grid-column: 1 / -1;
     }
 
     .assignment-grid button {
+        grid-column: 1 / -1;
+    }
+
+    .stop-form button {
         grid-column: 1 / -1;
     }
 
@@ -995,6 +1019,7 @@ dd {
     .parent-action-grid,
     .finance-grid,
     .assignment-grid,
+    .stop-form,
     .route-form {
         grid-template-columns: 1fr;
     }

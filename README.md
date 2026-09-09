@@ -22,6 +22,7 @@ Open `index.html` through a local web server to try the prototype.
 - Monitor live route health, delays, incidents, and active journeys.
 - Add driver and vehicle records into the operational register.
 - Update selected route assignments including operator, driver, vehicle, pupil count, and route status.
+- Assign pupils to pickup stops for the selected route.
 - Review compliance documents such as licences, bus insurance, CVRT certificates, and operator contracts.
 - Handle parent tickets, payments, reports, and audit logs.
 - Current sections: Overview, Routes, People, Compliance.
@@ -30,6 +31,7 @@ Open `index.html` through a local web server to try the prototype.
 
 - View assigned runs and route details.
 - Start journeys, mark stops, confirm pupils boarded, report delays, and complete routes.
+- See route-specific pupil pickup assignments from the admin route plan.
 - Upload documents for drivers, vehicles, and operator contracts.
 - Track review status for submitted compliance items.
 - Current sections: Run Sheet, Documents, Payments.
@@ -38,6 +40,7 @@ Open `index.html` through a local web server to try the prototype.
 
 - View live pickup/drop-off status and bus ETA.
 - Manage child and guardian details.
+- See pickup details from the assigned route.
 - Pay fees, view tickets, manage notifications, and report absences.
 - Current sections: Journey, Details, Payments, Tickets, Notifications.
 

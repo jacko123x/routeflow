@@ -185,6 +185,28 @@
                                 <button class="primary-action" type="submit">Update Assignment</button>
                             </div>
                         </form>
+                        <section class="stop-planner">
+                            <div class="section-heading compact-heading">
+                                <h3>Stops & Pupils</h3>
+                                <span>Selected route</span>
+                            </div>
+                            <form id="stopForm" class="stop-form">
+                                <label>
+                                    Pupil
+                                    <input id="stopPupil" name="pupil" required placeholder="Pupil name">
+                                </label>
+                                <label>
+                                    Pickup Stop
+                                    <input id="stopName" name="stop" required placeholder="Pickup point">
+                                </label>
+                                <label>
+                                    Guardian
+                                    <input id="stopGuardian" name="guardian" required placeholder="Guardian name">
+                                </label>
+                                <button class="primary-action" type="submit">Add Pickup</button>
+                            </form>
+                            <div id="stopAssignmentList" class="review-list"></div>
+                        </section>
                     </section>
                 </div>
 
@@ -455,7 +477,7 @@
                             <strong id="parentEta">08:04</strong>
                         </div>
                         <dl>
-                            <div><dt>Pickup</dt><dd>Oakpark Road</dd></div>
+                            <div><dt>Pickup</dt><dd id="parentPickup">Oakpark Road</dd></div>
                             <div><dt>Driver</dt><dd id="parentDriver">Michael</dd></div>
                             <div><dt>Vehicle</dt><dd id="parentVehicle">241-KY-123</dd></div>
                         </dl>
