@@ -657,7 +657,8 @@ main {
 
 .review-item,
 .run-item,
-.ticket-row {
+.ticket-row,
+.document-review-row {
     display: grid;
     grid-template-columns: 1fr auto;
     gap: 12px;
@@ -672,37 +673,44 @@ main {
 
 .review-item:has(.route-status.watch),
 .run-item:has(.route-status.watch),
-.ticket-row:has(.route-status.watch) {
+.ticket-row:has(.route-status.watch),
+.document-review-row:has(.route-status.watch) {
     border-left-color: var(--amber);
 }
 
 .review-item:has(.route-status.late),
 .run-item:has(.route-status.late),
-.ticket-row:has(.route-status.late) {
+.ticket-row:has(.route-status.late),
+.document-review-row:has(.route-status.late) {
     border-left-color: var(--red);
 }
 
 .review-item:has(.route-status.idle),
 .run-item:has(.route-status.idle),
-.ticket-row:has(.route-status.idle) {
+.ticket-row:has(.route-status.idle),
+.document-review-row:has(.route-status.idle) {
     border-left-color: var(--charcoal-soft);
 }
 
 .review-item strong,
 .run-item strong,
-.ticket-row strong {
+.ticket-row strong,
+.document-review-row strong {
     display: block;
 }
 
 .review-item span,
 .run-item span,
 .ticket-row span,
+.document-review-row span,
+.document-review-row small,
 .ticket-row small,
 .review-item small {
     color: var(--muted);
 }
 
 .review-item small,
+.document-review-row small,
 .ticket-row small {
     display: block;
     margin-top: 4px;

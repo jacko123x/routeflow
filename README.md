@@ -24,6 +24,7 @@ Open `index.html` through a local web server to try the prototype.
 - Update selected route assignments including operator, driver, vehicle, pupil count, and route status.
 - Assign pupils to pickup stops for the selected route.
 - Review compliance documents such as licences, bus insurance, CVRT certificates, and operator contracts.
+- Approve or reject operator document uploads and show the result back to the operator.
 - Handle parent tickets, payments, reports, and audit logs.
 - Assign, respond to, and close parent support tickets from the admin queue.
 - Current sections: Overview, Routes, People, Compliance.
@@ -36,6 +37,7 @@ Open `index.html` through a local web server to try the prototype.
 - Mark individual pupils as boarded from the driver manifest.
 - Upload documents for drivers, vehicles, and operator contracts.
 - Track review status for submitted compliance items.
+- See compliance review notes after admin approval or rejection.
 - Current sections: Run Sheet, Documents, Payments.
 
 ### Parent / Guardian

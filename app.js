@@ -137,8 +137,26 @@ const defaultRoutes = [
 ];
 
 const defaultOperatorDocuments = [
-    ["Fleet insurance", "Kerry Coaches - 2026", "Approved"],
-    ["CVRT Certificate", "Vehicle 232-KY-904", "Due Soon"]
+    {
+        id: "DOC-2001",
+        type: "Fleet insurance",
+        reference: "Kerry Coaches - 2026",
+        status: "Approved",
+        owner: "Kerry Coaches",
+        submittedAt: "07:52",
+        reviewedBy: "RouteFlow Compliance",
+        reviewNote: "Valid for the 2026 term."
+    },
+    {
+        id: "DOC-2002",
+        type: "CVRT Certificate",
+        reference: "Vehicle 232-KY-904",
+        status: "Due Soon",
+        owner: "Kingdom Bus",
+        submittedAt: "08:05",
+        reviewedBy: "",
+        reviewNote: ""
+    }
 ];
 
 const defaultTickets = [
@@ -214,6 +232,34 @@ function normaliseTickets(savedTickets) {
     });
 }
 
+function normaliseDocuments(savedDocuments) {
+    return savedDocuments.map((documentRecord, index) => {
+        if (Array.isArray(documentRecord)) {
+            return {
+                id: `DOC-${2001 + index}`,
+                type: documentRecord[0],
+                reference: documentRecord[1],
+                status: documentRecord[2],
+                owner: "Operator",
+                submittedAt: "08:05",
+                reviewedBy: documentRecord[2] === "Approved" ? "RouteFlow Compliance" : "",
+                reviewNote: ""
+            };
+        }
+
+        return {
+            id: documentRecord.id || `DOC-${2001 + index}`,
+            type: documentRecord.type || "Document",
+            reference: documentRecord.reference || "General operator upload",
+            status: documentRecord.status || "Pending",
+            owner: documentRecord.owner || "Operator",
+            submittedAt: documentRecord.submittedAt || "Now",
+            reviewedBy: documentRecord.reviewedBy || "",
+            reviewNote: documentRecord.reviewNote || ""
+        };
+    });
+}
+
 function loadState() {
     const defaults = {
         routes: cloneDefault(defaultRoutes),
@@ -238,7 +284,7 @@ function loadState() {
             ...defaults,
             ...savedState,
             operatorDocuments: Array.isArray(savedState.operatorDocuments)
-                ? savedState.operatorDocuments
+                ? normaliseDocuments(savedState.operatorDocuments)
                 : defaults.operatorDocuments,
             tickets: Array.isArray(savedState.tickets)
                 ? normaliseTickets(savedState.tickets)
@@ -283,6 +329,7 @@ const elements = {
     manifestList: document.querySelector("#manifestList"),
     eventLog: document.querySelector("#eventLog"),
     scheduleRows: document.querySelector("#scheduleRows"),
+    adminDocumentList: document.querySelector("#adminDocumentList"),
     adminTicketList: document.querySelector("#adminTicketList"),
     operatorDocumentList: document.querySelector("#operatorDocumentList"),
     ticketList: document.querySelector("#ticketList"),
@@ -500,20 +547,68 @@ function renderSchedule() {
     });
 }
 
+function getDocumentTone(status) {
+    if (status === "Rejected" || status === "Expired") {
+        return "late";
+    }
+
+    if (status === "Due Soon" || status === "Review") {
+        return "watch";
+    }
+
+    if (status === "Pending") {
+        return "idle";
+    }
+
+    return "";
+}
+
 function renderOperatorDocuments() {
-    elements.operatorDocumentList.innerHTML = operatorDocuments.map(([name, reference, status]) => {
-        const tone = status === "Approved" ? "" : status === "Due Soon" ? "watch" : "idle";
+    elements.operatorDocumentList.innerHTML = operatorDocuments.map((documentRecord) => {
+        const tone = getDocumentTone(documentRecord.status);
 
         return `
             <article class="review-item">
                 <div>
-                    <strong>${name}</strong>
-                    <span>${reference}</span>
+                    <strong>${documentRecord.type}</strong>
+                    <span>${documentRecord.reference} - ${documentRecord.owner}</span>
+                    ${documentRecord.reviewNote ? `<small>${documentRecord.reviewNote}</small>` : ""}
                 </div>
-                <span class="route-status ${tone}">${status}</span>
+                <span class="route-status ${tone}">${documentRecord.status}</span>
             </article>
         `;
     }).join("");
+}
+
+function renderAdminDocuments() {
+    elements.adminDocumentList.innerHTML = operatorDocuments.map((documentRecord, index) => {
+        const tone = getDocumentTone(documentRecord.status);
+        const reviewedBy = documentRecord.reviewedBy || "Unreviewed";
+
+        return `
+            <article class="document-review-row">
+                <div>
+                    <strong>${documentRecord.id} - ${documentRecord.type}</strong>
+                    <span>${documentRecord.reference} - ${documentRecord.owner}</span>
+                    <small>Submitted: ${documentRecord.submittedAt} - Reviewer: ${reviewedBy}</small>
+                    ${documentRecord.reviewNote ? `<small>Note: ${documentRecord.reviewNote}</small>` : ""}
+                </div>
+                <div class="ticket-actions">
+                    <span class="route-status ${tone}">${documentRecord.status}</span>
+                    <button class="secondary-action" data-doc-approve="${index}" type="button">Approve</button>
+                    <button class="secondary-action" data-doc-reject="${index}" type="button">Reject</button>
+                </div>
+            </article>
+        `;
+    }).join("");
+
+    document.querySelectorAll("[data-doc-approve]").forEach((button) => {
+        button.addEventListener("click", () => reviewDocument(Number(button.dataset.docApprove), "Approved"));
+    });
+
+    document.querySelectorAll("[data-doc-reject]").forEach((button) => {
+        button.addEventListener("click", () => reviewDocument(Number(button.dataset.docReject), "Rejected"));
+    });
 }
 
 function getTicketTone(status) {
@@ -688,6 +783,7 @@ function applyStep() {
     renderManifest();
     renderSchedule();
     renderOperatorDocuments();
+    renderAdminDocuments();
     renderTickets();
     renderAdminTickets();
     renderRegistryRecords();
@@ -825,12 +921,44 @@ function addDocument(event) {
     const documentType = formData.get("documentType").toString();
     const reference = formData.get("documentReference").toString().trim() || "General operator upload";
 
-    operatorDocuments.unshift([documentType, reference, "Pending"]);
+    operatorDocuments.unshift({
+        id: `DOC-${2001 + operatorDocuments.length}`,
+        type: documentType,
+        reference,
+        status: "Pending",
+        owner: getSelectedRoute().operator,
+        submittedAt: formatTime(),
+        reviewedBy: "",
+        reviewNote: ""
+    });
     elements.documentForm.reset();
 
     eventHistory.unshift({
         type: "document.uploaded",
         message: `${documentType} added to compliance review`,
+        time: formatTime()
+    });
+
+    saveState();
+    applyStep();
+}
+
+function reviewDocument(index, status) {
+    const documentRecord = operatorDocuments[index];
+
+    if (!documentRecord) {
+        return;
+    }
+
+    documentRecord.status = status;
+    documentRecord.reviewedBy = "RouteFlow Compliance";
+    documentRecord.reviewNote = status === "Approved"
+        ? "Document approved and available for operations."
+        : "Document rejected. Please upload a corrected file.";
+
+    eventHistory.unshift({
+        type: status === "Approved" ? "document.approved" : "document.rejected",
+        message: `${documentRecord.id} ${status.toLowerCase()} by compliance`,
         time: formatTime()
     });
 
