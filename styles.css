@@ -336,6 +336,7 @@ main {
 .planning-board,
 .registry-board,
 .document-queue,
+.support-queue,
 .operator-panel,
 .parent-actions,
 #events {
@@ -426,6 +427,13 @@ main {
 
 .people-grid {
     grid-template-columns: minmax(360px, 1fr) minmax(320px, 0.9fr);
+}
+
+.compliance-grid {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.82fr) minmax(420px, 1.18fr);
+    gap: 18px;
+    align-items: start;
 }
 
 .profile-grid {
@@ -564,6 +572,7 @@ main {
 .document-form,
 .registry-form,
 .stop-form,
+.ticket-response-form,
 .ticket-form {
     display: grid;
     gap: 12px;
@@ -574,6 +583,7 @@ main {
 .assignment-grid label,
 .registry-form label,
 .stop-form label,
+.ticket-response-form label,
 .ticket-form label {
     display: grid;
     gap: 6px;
@@ -590,6 +600,7 @@ main {
 .registry-form input,
 .registry-form select,
 .stop-form input,
+.ticket-response-form textarea,
 .ticket-form textarea {
     width: 100%;
     border: 1px solid var(--line);
@@ -617,6 +628,10 @@ main {
     resize: vertical;
 }
 
+.ticket-response-form textarea {
+    resize: vertical;
+}
+
 .setting-list {
     display: grid;
     gap: 10px;
@@ -641,7 +656,8 @@ main {
 }
 
 .review-item,
-.run-item {
+.run-item,
+.ticket-row {
     display: grid;
     grid-template-columns: 1fr auto;
     gap: 12px;
@@ -655,28 +671,53 @@ main {
 }
 
 .review-item:has(.route-status.watch),
-.run-item:has(.route-status.watch) {
+.run-item:has(.route-status.watch),
+.ticket-row:has(.route-status.watch) {
     border-left-color: var(--amber);
 }
 
 .review-item:has(.route-status.late),
-.run-item:has(.route-status.late) {
+.run-item:has(.route-status.late),
+.ticket-row:has(.route-status.late) {
     border-left-color: var(--red);
 }
 
 .review-item:has(.route-status.idle),
-.run-item:has(.route-status.idle) {
+.run-item:has(.route-status.idle),
+.ticket-row:has(.route-status.idle) {
     border-left-color: var(--charcoal-soft);
 }
 
 .review-item strong,
-.run-item strong {
+.run-item strong,
+.ticket-row strong {
     display: block;
 }
 
 .review-item span,
-.run-item span {
+.run-item span,
+.ticket-row span,
+.ticket-row small,
+.review-item small {
     color: var(--muted);
+}
+
+.review-item small,
+.ticket-row small {
+    display: block;
+    margin-top: 4px;
+}
+
+.ticket-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    justify-items: end;
+}
+
+.ticket-actions button {
+    width: 110px;
+    padding: 8px 10px;
 }
 
 .run-item.active {
@@ -975,6 +1016,7 @@ dd {
     .parent-layout,
     .finance-grid,
     .people-grid,
+    .compliance-grid,
     .admin-lower-grid {
         grid-template-columns: 1fr;
     }

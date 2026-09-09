@@ -25,6 +25,7 @@ Open `index.html` through a local web server to try the prototype.
 - Assign pupils to pickup stops for the selected route.
 - Review compliance documents such as licences, bus insurance, CVRT certificates, and operator contracts.
 - Handle parent tickets, payments, reports, and audit logs.
+- Assign, respond to, and close parent support tickets from the admin queue.
 - Current sections: Overview, Routes, People, Compliance.
 
 ### Driver / Bus Operator
@@ -45,6 +46,7 @@ Open `index.html` through a local web server to try the prototype.
 - Pay fees, view tickets, manage notifications, and report absences.
 - Current sections: Journey, Details, Payments, Tickets, Notifications.
 - Settle the demo balance and log a payment completion event.
+- View ticket status and admin responses.
 
 ## Current Prototype
 

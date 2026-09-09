@@ -310,6 +310,7 @@
                 </div>
 
                 <div class="portal-section" data-portal-panel="admin" data-section-panel="compliance">
+                <div class="compliance-grid">
                 <section class="document-queue">
                     <div class="section-heading">
                         <h3>Compliance Queue</h3>
@@ -339,6 +340,22 @@
                         </article>
                     </div>
                 </section>
+
+                <section class="support-queue">
+                    <div class="section-heading">
+                        <h3>Parent Support Queue</h3>
+                        <span>Tickets and responses</span>
+                    </div>
+                    <form id="ticketResponseForm" class="ticket-response-form">
+                        <label>
+                            Response
+                            <textarea id="ticketResponseMessage" name="response" rows="3" placeholder="Response to selected/open ticket"></textarea>
+                        </label>
+                        <button class="primary-action" type="submit">Respond To Latest Open</button>
+                    </form>
+                    <div id="adminTicketList" class="review-list"></div>
+                </section>
+                </div>
                 </div>
             </section>
 

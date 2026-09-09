@@ -142,7 +142,15 @@ const defaultOperatorDocuments = [
 ];
 
 const defaultTickets = [
-    ["Route query", "Can Emma use the Moyderwell stop on Friday?", "Open"]
+    {
+        id: "TCK-1001",
+        subject: "Route query",
+        message: "Can Emma use the Moyderwell stop on Friday?",
+        status: "Open",
+        owner: "Unassigned",
+        response: "",
+        createdAt: "08:12"
+    }
 ];
 
 const defaultRegistryRecords = [
@@ -180,6 +188,32 @@ function cloneDefault(value) {
     return JSON.parse(JSON.stringify(value));
 }
 
+function normaliseTickets(savedTickets) {
+    return savedTickets.map((ticket, index) => {
+        if (Array.isArray(ticket)) {
+            return {
+                id: `TCK-${1001 + index}`,
+                subject: ticket[0],
+                message: ticket[1],
+                status: ticket[2],
+                owner: "Unassigned",
+                response: "",
+                createdAt: "08:12"
+            };
+        }
+
+        return {
+            id: ticket.id || `TCK-${1001 + index}`,
+            subject: ticket.subject || "Parent support",
+            message: ticket.message || "",
+            status: ticket.status || "Open",
+            owner: ticket.owner || "Unassigned",
+            response: ticket.response || "",
+            createdAt: ticket.createdAt || "Now"
+        };
+    });
+}
+
 function loadState() {
     const defaults = {
         routes: cloneDefault(defaultRoutes),
@@ -206,7 +240,9 @@ function loadState() {
             operatorDocuments: Array.isArray(savedState.operatorDocuments)
                 ? savedState.operatorDocuments
                 : defaults.operatorDocuments,
-            tickets: Array.isArray(savedState.tickets) ? savedState.tickets : defaults.tickets,
+            tickets: Array.isArray(savedState.tickets)
+                ? normaliseTickets(savedState.tickets)
+                : defaults.tickets,
             registryRecords: Array.isArray(savedState.registryRecords)
                 ? savedState.registryRecords
                 : defaults.registryRecords,
@@ -247,6 +283,7 @@ const elements = {
     manifestList: document.querySelector("#manifestList"),
     eventLog: document.querySelector("#eventLog"),
     scheduleRows: document.querySelector("#scheduleRows"),
+    adminTicketList: document.querySelector("#adminTicketList"),
     operatorDocumentList: document.querySelector("#operatorDocumentList"),
     ticketList: document.querySelector("#ticketList"),
     registryList: document.querySelector("#registryList"),
@@ -256,6 +293,7 @@ const elements = {
     stopForm: document.querySelector("#stopForm"),
     documentForm: document.querySelector("#documentForm"),
     ticketForm: document.querySelector("#ticketForm"),
+    ticketResponseForm: document.querySelector("#ticketResponseForm"),
     registryForm: document.querySelector("#registryForm"),
     assignmentOperator: document.querySelector("#assignmentOperator"),
     assignmentDriver: document.querySelector("#assignmentDriver"),
@@ -283,6 +321,7 @@ const elements = {
     lastPayment: document.querySelector("#lastPayment"),
     paymentStatus: document.querySelector("#paymentStatus"),
     payNowButton: document.querySelector("#payNowButton"),
+    ticketResponseMessage: document.querySelector("#ticketResponseMessage"),
     parentStatus: document.querySelector("#parentStatus"),
     parentEtaLabel: document.querySelector("#parentEtaLabel"),
     parentEta: document.querySelector("#parentEta")
@@ -477,16 +516,55 @@ function renderOperatorDocuments() {
     }).join("");
 }
 
+function getTicketTone(status) {
+    if (status === "Closed") {
+        return "";
+    }
+
+    if (status === "Responded") {
+        return "watch";
+    }
+
+    return "idle";
+}
+
 function renderTickets() {
-    elements.ticketList.innerHTML = tickets.map(([subject, message, status]) => `
+    elements.ticketList.innerHTML = tickets.map((ticket) => `
         <article class="review-item">
             <div>
-                <strong>${subject}</strong>
-                <span>${message}</span>
+                <strong>${ticket.subject}</strong>
+                <span>${ticket.message}</span>
+                ${ticket.response ? `<small>${ticket.response}</small>` : ""}
             </div>
-            <span class="route-status idle">${status}</span>
+            <span class="route-status ${getTicketTone(ticket.status)}">${ticket.status}</span>
         </article>
     `).join("");
+}
+
+function renderAdminTickets() {
+    elements.adminTicketList.innerHTML = tickets.map((ticket, index) => `
+        <article class="ticket-row">
+            <div>
+                <strong>${ticket.id} - ${ticket.subject}</strong>
+                <span>${ticket.message}</span>
+                <small>Owner: ${ticket.owner} - Created: ${ticket.createdAt}</small>
+                ${ticket.response ? `<small>Response: ${ticket.response}</small>` : ""}
+            </div>
+            <div class="ticket-actions">
+                <span class="route-status ${getTicketTone(ticket.status)}">${ticket.status}</span>
+                <button class="secondary-action" data-ticket-assign="${index}" type="button">Assign</button>
+                <button class="secondary-action" data-ticket-close="${index}" type="button">Close</button>
+            </div>
+        </article>
+    `).join("");
+
+    document.querySelectorAll("[data-ticket-assign]").forEach((button) => {
+        button.addEventListener("click", () => assignTicket(Number(button.dataset.ticketAssign)));
+    });
+
+    document.querySelectorAll("[data-ticket-close]").forEach((button) => {
+        button.addEventListener("click", () => closeTicket(Number(button.dataset.ticketClose)));
+    });
 }
 
 function renderRegistryRecords() {
@@ -611,6 +689,7 @@ function applyStep() {
     renderSchedule();
     renderOperatorDocuments();
     renderTickets();
+    renderAdminTickets();
     renderRegistryRecords();
     renderStopAssignments();
     renderParentAccount();
@@ -768,7 +847,15 @@ function addTicket(event) {
         return;
     }
 
-    tickets.unshift(["Parent support", message, "Open"]);
+    tickets.unshift({
+        id: `TCK-${1001 + tickets.length}`,
+        subject: "Parent support",
+        message,
+        status: "Open",
+        owner: "Unassigned",
+        response: "",
+        createdAt: formatTime()
+    });
     elements.ticketForm.reset();
 
     eventHistory.unshift({
@@ -795,6 +882,70 @@ function addRegistryRecord(event) {
     eventHistory.unshift({
         type: `${type}.created`,
         message: `${name} added to operational register`,
+        time: formatTime()
+    });
+
+    saveState();
+    applyStep();
+}
+
+function assignTicket(index) {
+    const ticket = tickets[index];
+
+    if (!ticket) {
+        return;
+    }
+
+    ticket.owner = "RouteFlow Support";
+    ticket.status = ticket.status === "Closed" ? "Closed" : "In Progress";
+
+    eventHistory.unshift({
+        type: "ticket.assigned",
+        message: `${ticket.id} assigned to RouteFlow Support`,
+        time: formatTime()
+    });
+
+    saveState();
+    applyStep();
+}
+
+function closeTicket(index) {
+    const ticket = tickets[index];
+
+    if (!ticket) {
+        return;
+    }
+
+    ticket.status = "Closed";
+
+    eventHistory.unshift({
+        type: "ticket.closed",
+        message: `${ticket.id} closed`,
+        time: formatTime()
+    });
+
+    saveState();
+    applyStep();
+}
+
+function respondToLatestTicket(event) {
+    event.preventDefault();
+
+    const response = elements.ticketResponseMessage.value.trim();
+    const ticket = tickets.find((item) => item.status !== "Closed");
+
+    if (!response || !ticket) {
+        return;
+    }
+
+    ticket.response = response;
+    ticket.owner = "RouteFlow Support";
+    ticket.status = "Responded";
+    elements.ticketResponseForm.reset();
+
+    eventHistory.unshift({
+        type: "ticket.responded",
+        message: `${ticket.id} response sent to parent`,
         time: formatTime()
     });
 
@@ -876,6 +1027,7 @@ elements.assignmentForm.addEventListener("submit", updateAssignment);
 elements.stopForm.addEventListener("submit", addStopAssignment);
 elements.documentForm.addEventListener("submit", addDocument);
 elements.ticketForm.addEventListener("submit", addTicket);
+elements.ticketResponseForm.addEventListener("submit", respondToLatestTicket);
 elements.registryForm.addEventListener("submit", addRegistryRecord);
 
 applyStep();
