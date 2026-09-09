@@ -607,7 +607,35 @@ document.querySelectorAll(".nav-tab").forEach((tab) => {
     });
 });
 
+document.querySelectorAll(".portal-tab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+        const { portal, section } = tab.dataset;
+
+        document.querySelectorAll(`[data-portal="${portal}"]`).forEach((item) => {
+            item.classList.remove("active");
+        });
+
+        document.querySelectorAll(`[data-portal-panel="${portal}"]`).forEach((panel) => {
+            panel.classList.remove("active");
+        });
+
+        tab.classList.add("active");
+        document
+            .querySelector(`[data-portal-panel="${portal}"][data-section-panel="${section}"]`)
+            .classList.add("active");
+    });
+});
+
+document.querySelectorAll("[data-portal-jump]").forEach((button) => {
+    button.addEventListener("click", () => {
+        const [portal, section] = button.dataset.portalJump.split(":");
+        document.querySelector(`[data-portal="${portal}"][data-section="${section}"]`).click();
+    });
+});
+
 elements.addRouteButton.addEventListener("click", () => {
+    document.querySelector('[data-view="operations"]').click();
+    document.querySelector('[data-portal="admin"][data-section="routes"]').click();
     document.querySelector("#routeCodeInput").focus();
 });
 elements.advanceDemo.addEventListener("click", advanceJourney);

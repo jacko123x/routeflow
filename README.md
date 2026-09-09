@@ -23,6 +23,7 @@ Open `index.html` through a local web server to try the prototype.
 - Add driver and vehicle records into the operational register.
 - Review compliance documents such as licences, bus insurance, CVRT certificates, and operator contracts.
 - Handle parent tickets, payments, reports, and audit logs.
+- Current sections: Overview, Routes, People, Compliance.
 
 ### Driver / Bus Operator
 
@@ -30,12 +31,14 @@ Open `index.html` through a local web server to try the prototype.
 - Start journeys, mark stops, confirm pupils boarded, report delays, and complete routes.
 - Upload documents for drivers, vehicles, and operator contracts.
 - Track review status for submitted compliance items.
+- Current sections: Run Sheet, Documents, Payments.
 
 ### Parent / Guardian
 
 - View live pickup/drop-off status and bus ETA.
 - Manage child and guardian details.
 - Pay fees, view tickets, manage notifications, and report absences.
+- Current sections: Journey, Details, Payments, Tickets, Notifications.
 
 ## Current Prototype
 

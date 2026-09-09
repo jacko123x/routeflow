@@ -246,6 +246,40 @@ main {
     display: block;
 }
 
+.portal-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+    padding: 6px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #ebe2c7;
+}
+
+.portal-tab {
+    min-height: 38px;
+    border-radius: 8px;
+    padding: 0 13px;
+    color: var(--charcoal);
+    background: transparent;
+    font-weight: 800;
+}
+
+.portal-tab.active,
+.portal-tab:hover {
+    color: #ffffff;
+    background: var(--charcoal);
+}
+
+.portal-section {
+    display: none;
+}
+
+.portal-section.active {
+    display: block;
+}
+
 .summary-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -318,7 +352,9 @@ main {
 .operator-grid,
 .parent-layout,
 .parent-action-grid,
-.admin-lower-grid {
+.admin-lower-grid,
+.people-grid,
+.finance-grid {
     display: grid;
     gap: 18px;
 }
@@ -328,7 +364,8 @@ main {
 }
 
 .command-tile,
-.parent-action-card {
+.parent-action-card,
+.finance-card {
     display: grid;
     gap: 12px;
     align-content: start;
@@ -340,7 +377,8 @@ main {
 }
 
 .command-tile span,
-.parent-action-card span {
+.parent-action-card span,
+.finance-card span {
     color: var(--muted);
     font-size: 13px;
     font-weight: 800;
@@ -348,18 +386,28 @@ main {
 }
 
 .command-tile strong,
-.parent-action-card strong {
+.parent-action-card strong,
+.finance-card strong {
     font-size: 20px;
 }
 
+.finance-card small {
+    color: var(--muted);
+}
+
 .admin-lower-grid {
-    grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.85fr);
+    grid-template-columns: minmax(0, 1fr);
     align-items: start;
 }
 
 .operator-grid {
     grid-template-columns: minmax(320px, 0.85fr) minmax(360px, 1fr);
     margin-top: 18px;
+}
+
+.operator-grid.single-column {
+    grid-template-columns: minmax(0, 1fr);
+    margin-top: 0;
 }
 
 .parent-layout {
@@ -369,6 +417,18 @@ main {
 
 .parent-action-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.people-grid {
+    grid-template-columns: minmax(360px, 1fr) minmax(320px, 0.9fr);
+}
+
+.profile-grid {
+    margin-top: 0;
+}
+
+.finance-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .section-heading {
@@ -508,6 +568,29 @@ main {
 
 .ticket-form textarea {
     resize: vertical;
+}
+
+.setting-list {
+    display: grid;
+    gap: 10px;
+}
+
+.setting-list label {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    min-height: 48px;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fffaf0;
+    font-weight: 700;
+}
+
+.setting-list input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--green);
 }
 
 .review-item,
@@ -838,6 +921,8 @@ dd {
     .command-grid,
     .operator-grid,
     .parent-layout,
+    .finance-grid,
+    .people-grid,
     .admin-lower-grid {
         grid-template-columns: 1fr;
     }
@@ -874,6 +959,7 @@ dd {
     .summary-grid,
     .detail-grid,
     .parent-action-grid,
+    .finance-grid,
     .route-form {
         grid-template-columns: 1fr;
     }

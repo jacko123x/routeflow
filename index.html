@@ -64,6 +64,14 @@
             </header>
 
             <section id="operations" class="view active">
+                <nav class="portal-tabs" aria-label="Admin sections">
+                    <button class="portal-tab active" data-portal="admin" data-section="overview" type="button">Overview</button>
+                    <button class="portal-tab" data-portal="admin" data-section="routes" type="button">Routes</button>
+                    <button class="portal-tab" data-portal="admin" data-section="people" type="button">People</button>
+                    <button class="portal-tab" data-portal="admin" data-section="compliance" type="button">Compliance</button>
+                </nav>
+
+                <div class="portal-section active" data-portal-panel="admin" data-section-panel="overview">
                 <div class="summary-grid">
                     <article class="summary-panel status-good">
                         <span>On Time</span>
@@ -92,26 +100,28 @@
                         <article class="command-tile">
                             <span>Route Network</span>
                             <strong>127 active routes</strong>
-                            <button class="secondary-action" type="button">Manage Routes</button>
+                            <button class="secondary-action" data-portal-jump="admin:routes" type="button">Manage Routes</button>
                         </article>
                         <article class="command-tile">
                             <span>Drivers</span>
                             <strong>84 approved</strong>
-                            <button class="secondary-action" type="button">Assign Drivers</button>
+                            <button class="secondary-action" data-portal-jump="admin:people" type="button">Assign Drivers</button>
                         </article>
                         <article class="command-tile">
                             <span>Vehicles</span>
                             <strong>91 compliant</strong>
-                            <button class="secondary-action" type="button">Review Fleet</button>
+                            <button class="secondary-action" data-portal-jump="admin:people" type="button">Review Fleet</button>
                         </article>
                         <article class="command-tile">
                             <span>Operators</span>
                             <strong>16 companies</strong>
-                            <button class="secondary-action" type="button">View Operators</button>
+                            <button class="secondary-action" data-portal-jump="admin:compliance" type="button">View Operators</button>
                         </article>
                     </div>
                 </section>
+                </div>
 
+                <div class="portal-section" data-portal-panel="admin" data-section-panel="routes">
                 <div class="content-grid">
                     <section class="route-board">
                         <div class="section-heading">
@@ -178,7 +188,11 @@
                         <div id="scheduleRows"></div>
                     </div>
                 </section>
+                </div>
+                </div>
 
+                <div class="portal-section" data-portal-panel="admin" data-section-panel="people">
+                <div class="people-grid">
                 <section class="registry-board">
                     <div class="section-heading">
                         <h3>Driver & Fleet Register</h3>
@@ -205,6 +219,39 @@
                     <div id="registryList" class="review-list"></div>
                 </section>
 
+                <section class="registry-board">
+                    <div class="section-heading">
+                        <h3>Schools & Pupils</h3>
+                        <span>Assignments</span>
+                    </div>
+                    <div class="review-list">
+                        <article class="review-item">
+                            <div>
+                                <strong>St Brendan&apos;s College</strong>
+                                <span>23 pupils assigned to KY-014</span>
+                            </div>
+                            <span class="route-status">Active</span>
+                        </article>
+                        <article class="review-item">
+                            <div>
+                                <strong>Presentation</strong>
+                                <span>18 pupils assigned to KY-021</span>
+                            </div>
+                            <span class="route-status">Active</span>
+                        </article>
+                        <article class="review-item">
+                            <div>
+                                <strong>CBS Tralee</strong>
+                                <span>4 pupils need pickup confirmation</span>
+                            </div>
+                            <span class="route-status watch">Review</span>
+                        </article>
+                    </div>
+                </section>
+                </div>
+                </div>
+
+                <div class="portal-section" data-portal-panel="admin" data-section-panel="compliance">
                 <section class="document-queue">
                     <div class="section-heading">
                         <h3>Compliance Queue</h3>
@@ -238,6 +285,13 @@
             </section>
 
             <section id="driver" class="view">
+                <nav class="portal-tabs" aria-label="Driver and operator sections">
+                    <button class="portal-tab active" data-portal="operator" data-section="run" type="button">Run Sheet</button>
+                    <button class="portal-tab" data-portal="operator" data-section="documents" type="button">Documents</button>
+                    <button class="portal-tab" data-portal="operator" data-section="commercials" type="button">Payments</button>
+                </nav>
+
+                <div class="portal-section active" data-portal-panel="operator" data-section-panel="run">
                 <div class="driver-layout">
                     <section class="next-stop">
                         <p class="eyebrow">Next Stop</p>
@@ -277,7 +331,11 @@
                             </article>
                         </div>
                     </section>
+                </div>
+                </div>
 
+                <div class="portal-section" data-portal-panel="operator" data-section-panel="documents">
+                <div class="operator-grid single-column">
                     <section class="operator-panel">
                         <div class="section-heading">
                             <h3>Document Upload</h3>
@@ -302,9 +360,45 @@
                         <div id="operatorDocumentList" class="review-list"></div>
                     </section>
                 </div>
+                </div>
+
+                <div class="portal-section" data-portal-panel="operator" data-section-panel="commercials">
+                    <section class="operator-panel">
+                        <div class="section-heading">
+                            <h3>Operator Payments</h3>
+                            <span>Contracts and settlement</span>
+                        </div>
+                        <div class="finance-grid">
+                            <article class="finance-card">
+                                <span>Current Month</span>
+                                <strong>EUR 12,840.00</strong>
+                                <small>Routes completed and approved</small>
+                            </article>
+                            <article class="finance-card">
+                                <span>Pending Review</span>
+                                <strong>EUR 1,460.00</strong>
+                                <small>Awaiting route sign-off</small>
+                            </article>
+                            <article class="finance-card">
+                                <span>Contract Status</span>
+                                <strong>Active</strong>
+                                <small>2026 school term</small>
+                            </article>
+                        </div>
+                    </section>
+                </div>
             </section>
 
             <section id="parent" class="view">
+                <nav class="portal-tabs" aria-label="Parent sections">
+                    <button class="portal-tab active" data-portal="parent" data-section="journey" type="button">Journey</button>
+                    <button class="portal-tab" data-portal="parent" data-section="details" type="button">Details</button>
+                    <button class="portal-tab" data-portal="parent" data-section="payments" type="button">Payments</button>
+                    <button class="portal-tab" data-portal="parent" data-section="tickets" type="button">Tickets</button>
+                    <button class="portal-tab" data-portal="parent" data-section="notifications" type="button">Notifications</button>
+                </nav>
+
+                <div class="portal-section active" data-portal-panel="parent" data-section-panel="journey">
                 <div class="parent-layout">
                 <div class="parent-phone">
                     <div class="phone-top">
@@ -331,10 +425,31 @@
                         </dl>
                     </div>
                 </div>
+                </div>
+                </div>
+
+                <div class="portal-section" data-portal-panel="parent" data-section-panel="details">
                 <section class="parent-actions">
                     <div class="section-heading">
-                        <h3>Family Account</h3>
-                        <span>Guardian tools</span>
+                        <h3>Family Details</h3>
+                        <span>Child, guardian and pickup</span>
+                    </div>
+                    <div class="detail-grid profile-grid">
+                        <div><span>Child</span><strong>Emma Murphy</strong></div>
+                        <div><span>School</span><strong>St Brendan&apos;s College</strong></div>
+                        <div><span>Pickup Stop</span><strong>Oakpark Road</strong></div>
+                        <div><span>Guardian</span><strong>Laura Murphy</strong></div>
+                        <div><span>Emergency Contact</span><strong>087 555 0192</strong></div>
+                        <div><span>Plan</span><strong>Morning and afternoon</strong></div>
+                    </div>
+                </section>
+                </div>
+
+                <div class="portal-section" data-portal-panel="parent" data-section-panel="payments">
+                <section class="parent-actions">
+                    <div class="section-heading">
+                        <h3>Payments</h3>
+                        <span>Family account</span>
                     </div>
                     <div class="parent-action-grid">
                         <article class="parent-action-card">
@@ -343,22 +458,20 @@
                             <button class="primary-action" type="button">Pay Now</button>
                         </article>
                         <article class="parent-action-card">
-                            <span>Open Tickets</span>
-                            <strong>1 active</strong>
-                            <button class="secondary-action" type="button">View Tickets</button>
-                        </article>
-                        <article class="parent-action-card">
-                            <span>Notifications</span>
-                            <strong>Pickup alerts on</strong>
-                            <button class="secondary-action" type="button">Manage Alerts</button>
-                        </article>
-                        <article class="parent-action-card">
-                            <span>Absence</span>
-                            <strong>Today available</strong>
-                            <button class="secondary-action" type="button">Report Absence</button>
+                            <span>Last Payment</span>
+                            <strong>EUR 96.00</strong>
+                            <button class="secondary-action" type="button">View Receipt</button>
                         </article>
                     </div>
+                </section>
+                </div>
 
+                <div class="portal-section" data-portal-panel="parent" data-section-panel="tickets">
+                <section class="parent-actions">
+                    <div class="section-heading">
+                        <h3>Support Tickets</h3>
+                        <span>Pickup and account help</span>
+                    </div>
                     <form id="ticketForm" class="ticket-form">
                         <label>
                             Support Ticket
@@ -367,6 +480,22 @@
                         <button class="primary-action" type="submit">Create Ticket</button>
                     </form>
                     <div id="ticketList" class="review-list"></div>
+                </section>
+                </div>
+
+                <div class="portal-section" data-portal-panel="parent" data-section-panel="notifications">
+                <section class="parent-actions">
+                    <div class="section-heading">
+                        <h3>Notifications</h3>
+                        <span>Live journey alerts</span>
+                    </div>
+                    <div class="setting-list">
+                        <label><input type="checkbox" checked> Bus started route</label>
+                        <label><input type="checkbox" checked> Bus approaching pickup</label>
+                        <label><input type="checkbox" checked> Child boarded</label>
+                        <label><input type="checkbox" checked> Arrival at school</label>
+                        <label><input type="checkbox"> Weekly payment reminders</label>
+                    </div>
                 </section>
                 </div>
             </section>
