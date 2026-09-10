@@ -1,3 +1,4 @@
+/* Theme tokens and browser reset */
 :root {
     --ink: #1f2522;
     --muted: #68736d;
@@ -41,6 +42,7 @@ button:disabled {
     opacity: 0.72;
 }
 
+/* Shared application shell */
 .app-shell {
     min-height: 100vh;
     display: grid;
@@ -155,6 +157,7 @@ button:disabled {
     background: var(--amber);
 }
 
+/* Sidebar operational summary */
 .sidebar-section {
     border-top: 1px solid rgba(255, 255, 255, 0.25);
     padding-top: 20px;
@@ -187,6 +190,7 @@ button:disabled {
     border-left-color: var(--red);
 }
 
+/* Main content header and global actions */
 main {
     min-width: 0;
     padding: 28px;
@@ -293,6 +297,7 @@ main {
     display: block;
 }
 
+/* Admin overview and route management */
 .summary-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -551,6 +556,7 @@ main {
     background: var(--charcoal-soft);
 }
 
+/* Forms and editable operational records */
 .route-form {
     display: grid;
     grid-template-columns: 0.65fr 1.2fr 1fr 0.55fr auto;
@@ -664,6 +670,7 @@ main {
     accent-color: var(--green);
 }
 
+/* Review queues, tickets, documents, and notifications */
 .review-item,
 .notification-item,
 .run-item,
@@ -783,6 +790,7 @@ main {
     outline: 3px solid rgba(0, 122, 61, 0.16);
 }
 
+/* Schedule table and live map mock */
 .schedule-table {
     overflow-x: auto;
     border: 1px solid var(--line);
@@ -898,6 +906,7 @@ main {
     margin-top: 6px;
 }
 
+/* Operator run sheet and stop manifest */
 .next-stop h3 {
     font-size: 34px;
 }
@@ -936,6 +945,7 @@ main {
     opacity: 0.72;
 }
 
+/* Parent journey phone mock and account details */
 .parent-phone {
     width: min(390px, 100%);
     margin: 0 auto;
@@ -1021,6 +1031,7 @@ dd {
     font-weight: 800;
 }
 
+/* Event stream view for prototype diagnostics */
 .event-log {
     display: grid;
     gap: 10px;
@@ -1041,6 +1052,7 @@ dd {
     font-weight: 800;
 }
 
+/* Home page role chooser */
 .role-home {
     min-height: 100vh;
     padding: 40px;
@@ -1138,6 +1150,7 @@ dd {
     padding: 8px 10px;
 }
 
+/* Tablet layout */
 @media (max-width: 960px) {
     .app-shell,
     .content-grid,
@@ -1196,6 +1209,7 @@ dd {
     }
 }
 
+/* Phone layout */
 @media (max-width: 560px) {
     main,
     .sidebar {

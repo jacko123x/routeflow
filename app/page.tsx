@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+// Temporary role entry cards. These become login destinations when authentication is added.
 const workspaces = [
   {
     href: "/admin",
@@ -24,6 +25,7 @@ const workspaces = [
   }
 ];
 
+// Local copy of the RouteFlow mark for the entry page.
 function Logo() {
   return (
     <svg viewBox="0 0 64 64" role="img" aria-label="RouteFlow">

@@ -2,11 +2,13 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
+// Role and section types define the visible workspaces and their internal tabs.
 export type Portal = "operations" | "driver" | "parent" | "events";
 type AdminSection = "overview" | "routes" | "people" | "compliance";
 type OperatorSection = "run" | "documents" | "commercials";
 type ParentSection = "journey" | "details" | "payments" | "tickets" | "notifications";
 
+// Core demo records. These are the first pass at the domain model before a real API/backend exists.
 type RouteRecord = {
   code: string;
   school: string;
@@ -73,6 +75,7 @@ type EventRecord = {
 
 const storageKey = "routeflow-next-state-v1";
 
+// Journey steps drive the shared demo flow across Admin, Operator, and Parent views.
 const journeySteps = [
   {
     event: "route.started",
@@ -141,6 +144,7 @@ const journeySteps = [
   }
 ];
 
+// Seed data keeps the prototype useful without a backend. Local storage persists edits between refreshes.
 const defaultRoutes: RouteRecord[] = [
   {
     code: "KY-014",
@@ -301,6 +305,7 @@ const defaultParentAccount: ParentAccount = {
   paymentStatus: "Payment due"
 };
 
+// Small helpers keep status colouring and demo cloning consistent throughout the component.
 function clone<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
 }
@@ -347,6 +352,7 @@ const portalPaths: Record<Portal, string> = {
   events: "/"
 };
 
+// Shared RouteFlow mark used in the sidebar.
 function Logo() {
   return (
     <svg viewBox="0 0 64 64" role="img">
@@ -371,6 +377,7 @@ type RouteFlowAppProps = {
   lockedPortal?: boolean;
 };
 
+// Main workspace shell. Role pages can lock this to Admin, Operator, or Parent.
 export default function RouteFlowApp({
   initialPortal = "operations",
   lockedPortal = false
@@ -392,6 +399,7 @@ export default function RouteFlowApp({
   const [parentSection, setParentSection] = useState<ParentSection>("journey");
   const [hydrated, setHydrated] = useState(false);
 
+  // Derived values keep the rendered views synced to the selected route and journey step.
   const selectedRoute = routes[selectedRouteIndex] || routes[0];
   const assignments = stopAssignments[selectedRoute.code] || [];
   const boardedCount = assignments.filter((assignment) => assignment.state === "boarded").length;
@@ -404,6 +412,7 @@ export default function RouteFlowApp({
     setPortal(initialPortal);
   }, [initialPortal]);
 
+  // Load any local demo edits after hydration so Next server rendering stays stable.
   useEffect(() => {
     const saved = localStorage.getItem(storageKey);
     if (saved) {
@@ -427,6 +436,7 @@ export default function RouteFlowApp({
     setHydrated(true);
   }, []);
 
+  // Persist the prototype state locally until we replace it with real API calls.
   useEffect(() => {
     if (!hydrated) return;
     localStorage.setItem(storageKey, JSON.stringify({
@@ -457,6 +467,7 @@ export default function RouteFlowApp({
     stepIndex
   ]);
 
+  // Shared event and notification helpers used by multiple role workflows.
   function logEvent(type: string, message: string) {
     setEvents((current) => [{ type, message, time: formatTime() }, ...current].slice(0, 50));
   }
@@ -479,6 +490,7 @@ export default function RouteFlowApp({
     logEvent("route.selected", `${routes[index].code} selected for review`);
   }
 
+  // Moves the demo journey through route start, pickup, boarding, and arrival.
   function advanceJourney() {
     if (stepIndex >= journeySteps.length - 1) return;
     const nextIndex = stepIndex + 1;
@@ -511,6 +523,7 @@ export default function RouteFlowApp({
     localStorage.removeItem(storageKey);
   }
 
+  // Admin route planning and assignment handlers.
   function addRoute(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
@@ -586,6 +599,7 @@ export default function RouteFlowApp({
     addNotification("childBoarded", `${assignment.pupil} boarded`, `${assignment.pupil} boarded ${selectedRoute.code} at ${assignment.stop}.`);
   }
 
+  // Operator document uploads and Admin compliance review handlers.
   function addDocument(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
@@ -618,6 +632,7 @@ export default function RouteFlowApp({
     logEvent(status === "Approved" ? "document.approved" : "document.rejected", `${documents[index].id} ${status.toLowerCase()} by compliance`);
   }
 
+  // Parent ticket creation plus Admin assignment, response, and closure handlers.
   function addTicket(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
@@ -680,6 +695,7 @@ export default function RouteFlowApp({
     form.reset();
   }
 
+  // Parent account payment simulation.
   function settleParentBalance() {
     if (parentAccount.balanceDue === 0) return;
     const paidAmount = parentAccount.balanceDue;
@@ -696,6 +712,7 @@ export default function RouteFlowApp({
 
   return (
     <div className="app-shell">
+      {/* Shared sidebar: role pages lock this to one workspace, demo mode can still switch roles. */}
       <aside className="sidebar" aria-label="RouteFlow navigation">
         <div className="brand-block">
           <div className="brand-mark" aria-hidden="true"><Logo /></div>
@@ -730,6 +747,7 @@ export default function RouteFlowApp({
       </aside>
 
       <main>
+        {/* Shared top bar actions for demo reset, route editing, and journey simulation. */}
         <header className="topbar">
           <div>
             <p className="eyebrow">Today - Thursday 10 September</p>
@@ -743,6 +761,7 @@ export default function RouteFlowApp({
           </div>
         </header>
 
+        {/* Admin / school transport staff workspace. */}
         {portal === "operations" && (
           <section className="view active">
             <nav className="portal-tabs" aria-label="Admin sections">
@@ -897,6 +916,7 @@ export default function RouteFlowApp({
           </section>
         )}
 
+        {/* Bus operator and driver workspace. */}
         {portal === "driver" && (
           <section className="view active">
             <nav className="portal-tabs" aria-label="Driver and operator sections">
@@ -950,6 +970,7 @@ export default function RouteFlowApp({
           </section>
         )}
 
+        {/* Parent self-service and journey tracking workspace. */}
         {portal === "parent" && (
           <section className="view active">
             <nav className="portal-tabs" aria-label="Parent sections">
@@ -963,6 +984,7 @@ export default function RouteFlowApp({
           </section>
         )}
 
+        {/* Internal event stream for debugging the current prototype state. */}
         {portal === "events" && <section className="view active" id="events"><div className="section-heading"><h3>Journey Events</h3><span>Event stream</span></div><ol className="event-log">{events.map((event, index) => <li key={`${event.type}-${index}`}><code>{event.type}</code><span>{event.time} - {event.message}</span></li>)}</ol></section>}
       </main>
     </div>
