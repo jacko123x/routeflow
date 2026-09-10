@@ -49,6 +49,8 @@ Open `index.html` through a local web server to try the prototype.
 - Current sections: Journey, Details, Payments, Tickets, Notifications.
 - Settle the demo balance and log a payment completion event.
 - View ticket status and admin responses.
+- Receive saved parent notifications from journey, ticket, and payment events.
+- Toggle parent notification preferences and mark notifications as read.
 
 ## Current Prototype
 

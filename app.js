@@ -184,6 +184,37 @@ const defaultParentAccount = {
     paymentStatus: "Payment due"
 };
 
+const defaultNotificationSettings = {
+    routeStarted: true,
+    approachingPickup: true,
+    childBoarded: true,
+    arrivedAtSchool: true,
+    ticketUpdates: true,
+    paymentUpdates: true,
+    weeklyReminders: false
+};
+
+const notificationLabels = {
+    routeStarted: "Bus started route",
+    approachingPickup: "Bus approaching pickup",
+    childBoarded: "Child boarded",
+    arrivedAtSchool: "Arrival at school",
+    ticketUpdates: "Ticket updates",
+    paymentUpdates: "Payment updates",
+    weeklyReminders: "Weekly payment reminders"
+};
+
+const defaultNotifications = [
+    {
+        id: "NTF-3001",
+        type: "routeStarted",
+        title: "Route scheduled",
+        message: "KY-014 is ready for the morning service.",
+        time: "07:40",
+        read: false
+    }
+];
+
 const defaultStopAssignments = {
     "KY-014": [
         { pupil: "Emma Murphy", stop: "Oakpark Road", guardian: "Laura Murphy", state: "pending" },
@@ -267,6 +298,8 @@ function loadState() {
         tickets: cloneDefault(defaultTickets),
         registryRecords: cloneDefault(defaultRegistryRecords),
         parentAccount: cloneDefault(defaultParentAccount),
+        notificationSettings: cloneDefault(defaultNotificationSettings),
+        notifications: cloneDefault(defaultNotifications),
         stopAssignments: cloneDefault(defaultStopAssignments),
         selectedRouteIndex: 0,
         stepIndex: -1,
@@ -295,6 +328,12 @@ function loadState() {
             parentAccount: savedState.parentAccount && typeof savedState.parentAccount === "object"
                 ? savedState.parentAccount
                 : defaults.parentAccount,
+            notificationSettings: savedState.notificationSettings && typeof savedState.notificationSettings === "object"
+                ? { ...defaults.notificationSettings, ...savedState.notificationSettings }
+                : defaults.notificationSettings,
+            notifications: Array.isArray(savedState.notifications)
+                ? savedState.notifications
+                : defaults.notifications,
             stopAssignments: savedState.stopAssignments && typeof savedState.stopAssignments === "object"
                 ? savedState.stopAssignments
                 : defaults.stopAssignments,
@@ -311,6 +350,8 @@ const operatorDocuments = state.operatorDocuments;
 const tickets = state.tickets;
 const registryRecords = state.registryRecords;
 const parentAccount = state.parentAccount;
+const notificationSettings = state.notificationSettings;
+const notifications = state.notifications;
 const stopAssignments = state.stopAssignments;
 let selectedRouteIndex = Math.max(0, Math.min(state.selectedRouteIndex, routes.length - 1));
 let stepIndex = state.stepIndex;
@@ -331,6 +372,9 @@ const elements = {
     scheduleRows: document.querySelector("#scheduleRows"),
     adminDocumentList: document.querySelector("#adminDocumentList"),
     adminTicketList: document.querySelector("#adminTicketList"),
+    notificationSettings: document.querySelector("#notificationSettings"),
+    notificationList: document.querySelector("#notificationList"),
+    notificationCount: document.querySelector("#notificationCount"),
     operatorDocumentList: document.querySelector("#operatorDocumentList"),
     ticketList: document.querySelector("#ticketList"),
     registryList: document.querySelector("#registryList"),
@@ -395,6 +439,8 @@ function saveState() {
         tickets,
         registryRecords,
         parentAccount,
+        notificationSettings,
+        notifications: notifications.slice(0, 30),
         stopAssignments,
         selectedRouteIndex,
         stepIndex,
@@ -408,6 +454,8 @@ function restoreDefaults() {
     tickets.splice(0, tickets.length, ...cloneDefault(defaultTickets));
     registryRecords.splice(0, registryRecords.length, ...cloneDefault(defaultRegistryRecords));
     Object.assign(parentAccount, cloneDefault(defaultParentAccount));
+    Object.assign(notificationSettings, cloneDefault(defaultNotificationSettings));
+    notifications.splice(0, notifications.length, ...cloneDefault(defaultNotifications));
     Object.keys(stopAssignments).forEach((key) => delete stopAssignments[key]);
     Object.assign(stopAssignments, cloneDefault(defaultStopAssignments));
     selectedRouteIndex = 0;
@@ -723,6 +771,64 @@ function renderParentAccount() {
     elements.payNowButton.textContent = parentAccount.balanceDue === 0 ? "Paid" : "Pay Now";
 }
 
+function addNotification(type, title, message) {
+    if (!notificationSettings[type]) {
+        return;
+    }
+
+    notifications.unshift({
+        id: `NTF-${3001 + notifications.length}`,
+        type,
+        title,
+        message,
+        time: formatTime(),
+        read: false
+    });
+}
+
+function renderNotificationSettings() {
+    elements.notificationSettings.innerHTML = Object.entries(notificationLabels).map(([key, label]) => {
+        const checked = notificationSettings[key] ? " checked" : "";
+
+        return `
+            <label>
+                <input data-notification-setting="${key}" type="checkbox"${checked}>
+                ${label}
+            </label>
+        `;
+    }).join("");
+
+    document.querySelectorAll("[data-notification-setting]").forEach((input) => {
+        input.addEventListener("change", () => {
+            notificationSettings[input.dataset.notificationSetting] = input.checked;
+            saveState();
+        });
+    });
+}
+
+function renderNotifications() {
+    const unreadCount = notifications.filter((notification) => !notification.read).length;
+
+    elements.notificationCount.textContent = `${unreadCount} unread`;
+    elements.notificationList.innerHTML = notifications.map((notification, index) => {
+        const readClass = notification.read ? " read" : "";
+
+        return `
+            <article class="notification-item${readClass}">
+                <div>
+                    <strong>${notification.title}</strong>
+                    <span>${notification.time} - ${notification.message}</span>
+                </div>
+                <button class="secondary-action" data-notification-read="${index}" type="button">Mark Read</button>
+            </article>
+        `;
+    }).join("");
+
+    document.querySelectorAll("[data-notification-read]").forEach((button) => {
+        button.addEventListener("click", () => markNotificationRead(Number(button.dataset.notificationRead)));
+    });
+}
+
 function logEvent(step) {
     const route = getSelectedRoute();
 
@@ -789,6 +895,8 @@ function applyStep() {
     renderRegistryRecords();
     renderStopAssignments();
     renderParentAccount();
+    renderNotificationSettings();
+    renderNotifications();
     renderEvents();
 }
 
@@ -799,6 +907,7 @@ function advanceJourney() {
 
     stepIndex += 1;
     logEvent(journeySteps[stepIndex]);
+    notifyJourneyStep(journeySteps[stepIndex]);
     saveState();
     applyStep();
 }
@@ -886,6 +995,11 @@ function boardPupil(index) {
         time: formatTime()
     });
 
+    addNotification(
+        "childBoarded",
+        `${assignment.pupil} boarded`,
+        `${assignment.pupil} boarded ${route.code} at ${assignment.stop}.`
+    );
     saveState();
     applyStep();
 }
@@ -1052,6 +1166,7 @@ function closeTicket(index) {
         time: formatTime()
     });
 
+    addNotification("ticketUpdates", "Ticket closed", `${ticket.id} has been closed.`);
     saveState();
     applyStep();
 }
@@ -1077,6 +1192,7 @@ function respondToLatestTicket(event) {
         time: formatTime()
     });
 
+    addNotification("ticketUpdates", "Support replied", response);
     saveState();
     applyStep();
 }
@@ -1098,6 +1214,32 @@ function settleParentBalance() {
         time: formatTime()
     });
 
+    addNotification("paymentUpdates", "Payment received", `EUR ${paidAmount.toFixed(2)} received.`);
+    saveState();
+    applyStep();
+}
+
+function notifyJourneyStep(step) {
+    const route = getSelectedRoute();
+    const notificationMap = {
+        "route.started": ["routeStarted", "Bus started", `${route.code} has started the school run.`],
+        "stop.approaching": ["approachingPickup", "Bus approaching", `${route.code} is approaching pickup.`],
+        "pupil.boarded": ["childBoarded", "Child boarded", "Emma is now on board."],
+        "route.completed": ["arrivedAtSchool", "Arrived at school", `${route.code} has arrived at school.`]
+    };
+    const notification = notificationMap[step.event];
+
+    if (notification) {
+        addNotification(notification[0], notification[1], notification[2]);
+    }
+}
+
+function markNotificationRead(index) {
+    if (!notifications[index]) {
+        return;
+    }
+
+    notifications[index].read = true;
     saveState();
     applyStep();
 }

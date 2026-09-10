@@ -468,6 +468,7 @@ main {
 .route-list,
 .manifest-list,
 .review-list,
+.notification-list,
 .run-list {
     display: grid;
     gap: 10px;
@@ -656,6 +657,7 @@ main {
 }
 
 .review-item,
+.notification-item,
 .run-item,
 .ticket-row,
 .document-review-row {
@@ -693,6 +695,7 @@ main {
 }
 
 .review-item strong,
+.notification-item strong,
 .run-item strong,
 .ticket-row strong,
 .document-review-row strong {
@@ -700,6 +703,7 @@ main {
 }
 
 .review-item span,
+.notification-item span,
 .run-item span,
 .ticket-row span,
 .document-review-row span,
@@ -714,6 +718,20 @@ main {
 .ticket-row small {
     display: block;
     margin-top: 4px;
+}
+
+.notification-item {
+    border-left-color: var(--amber);
+}
+
+.notification-item.read {
+    border-left-color: var(--charcoal-soft);
+    opacity: 0.72;
+}
+
+.notification-item button {
+    width: 110px;
+    padding: 8px 10px;
 }
 
 .ticket-actions {
